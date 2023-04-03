@@ -220,9 +220,7 @@ for epoch in range(start, epochs+1):
         sampler.acceptance_rate, Tensor) else sampler.acceptance_rate.item()
 
     stats['walltime'] = end-start
-
-    print(stats)
-
+    
     writer(stats)
 
     if(epoch % em_save_every_ith == 0):
