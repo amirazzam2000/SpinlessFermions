@@ -27,7 +27,8 @@ def get_params(net, requires_grad: bool=False):
     raise ValueError("")
 
 def sync_time() -> None:
-    torch.cuda.synchronize()
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
     return time.perf_counter()
 
 def clip(elocal: Tensor, clip_factor: int):
