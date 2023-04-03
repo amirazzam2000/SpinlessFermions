@@ -211,12 +211,13 @@ for epoch in range(start, epochs+1):
     end = sync_time()
 
     stats['epoch'] = [epoch] #must pass index
-    stats['loss'] = loss.item() if torch.cuda.is_available() else loss.cup().item()
-    stats['energy_mean'] = energy_mean.item() if torch.cuda.is_available() else energy_mean.cup().item()
-    stats['energy_std'] = energy_var.sqrt().item() if torch.cuda.is_available() else energy_var.cpu().sqrt().item() 
+    stats['loss'] = loss.item() 
+    stats['energy_mean'] = energy_mean.item() 
+    stats['energy_std'] = energy_var.sqrt().item() 
     stats['CI'] = gs_CI
-    stats['proposal_width'] = sampler.sigma.item() if torch.cuda.is_available() else  sampler.sigma.cpu().item() 
-    stats['acceptance_rate'] = sampler.acceptance_rate.item() if torch.cuda.is_available() else sampler.acceptance_rate.cup().item()
+    stats['proposal_width'] = sampler.sigma.item() 
+    stats['acceptance_rate'] = sampler.acceptance_rate if not isinstance(
+        sampler.acceptance_rate, Tensor) else sampler.acceptance_rate.item()
 
     stats['walltime'] = end-start
 
