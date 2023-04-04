@@ -1,5 +1,6 @@
 import torch
 from torch import nn, Tensor
+import numpy as np
 
 import os, sys, time
 
@@ -184,6 +185,12 @@ net=output_dict['net']
 optim=output_dict['optim']
 sampler=output_dict['sampler']
 
+the_last_loss = 100
+patience = 10
+trigger_times = 0
+num_iterations = 0
+delta = 1e-5
+
 #Energy Minimisation
 for epoch in range(start, epochs+1):
     stats={}
@@ -238,5 +245,20 @@ for epoch in range(start, epochs+1):
 
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s)        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start))
     sys.stdout.flush()
+
+    the_current_loss = loss.item()
+           #print('The current loss:', the_current_loss)
+
+    if np.abs(the_current_loss - the_last_loss) < delta:
+        trigger_times += 1
+
+        if trigger_times >= patience:
+            print('Early stopping!')
+            break
+
+    else:
+        #print('trigger times: 0')
+        trigger_times = 0
+    the_last_loss = the_current_loss
 
 print("\nDone")
