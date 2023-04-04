@@ -39,6 +39,7 @@ parser.add_argument("--preepochs",          type=int,   default=10000, help="Num
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The name of the output model")
+parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 
 args = parser.parse_args()
 
@@ -47,6 +48,7 @@ num_hidden = args.num_hidden  #number of hidden nodes per layer
 num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
+load_model_name = args.load_model_name      #the name of the model
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
@@ -179,8 +181,13 @@ filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
                  optim.__class__.__name__, False, device, dtype)
 
+
 writer = load_dataframe(filename)
-output_dict = load_model(model_path=model_path, device=device, net=net, optim=optim, sampler=sampler)
+
+if load_model_name is not None:
+    output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler)
+else :
+    output_dict = load_model(model_path=model_path, device=device, net=net, optim=optim, sampler=sampler)
 
 start=output_dict['start'] #unpack dict
 net=output_dict['net']
