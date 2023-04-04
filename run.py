@@ -189,8 +189,9 @@ the_last_loss = 100
 patience = 10
 trigger_times = 0
 num_iterations = 0
-delta = 1e-5
+delta = 1e-4
 
+print("early stopping active")
 #Energy Minimisation
 for epoch in range(start, epochs+1):
     stats={}
@@ -259,6 +260,7 @@ for epoch in range(start, epochs+1):
     else:
         #print('trigger times: 0')
         trigger_times = 0
+
     the_last_loss = the_current_loss
 
 print("\nDone")
