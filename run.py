@@ -38,6 +38,7 @@ parser.add_argument("-S", "--sigma0",       type=float, default=0.5,   help="Int
 parser.add_argument("--preepochs",          type=int,   default=10000, help="Number of pre-epochs for the pretraining phase")
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
+parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The name of the output model")
 
 args = parser.parse_args()
 
@@ -45,6 +46,7 @@ nfermions = args.num_fermions #number of input nodes
 num_hidden = args.num_hidden  #number of hidden nodes per layer
 num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
+model_name = args.model_name      #the name of the model
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
@@ -172,7 +174,7 @@ optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 
 model_path = "results/energy/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_chkp.pt" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
-                 optim.__class__.__name__, False, device, dtype)
+                 optim.__class__.__name__, False, device, dtype) if model_name is None else model_name
 filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s.csv" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
                  optim.__class__.__name__, False, device, dtype)
