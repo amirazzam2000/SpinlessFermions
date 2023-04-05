@@ -257,7 +257,7 @@ for epoch in range(start, epochs+1):
     the_current_loss = loss.item()
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.4f        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.6f        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff))
     sys.stdout.flush()
 
     if loss_diff < delta:
