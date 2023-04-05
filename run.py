@@ -186,10 +186,11 @@ writer = load_dataframe(filename)
 
 if load_model_name is not None:
     output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler)
+    start =0
 else :
     output_dict = load_model(model_path=model_path, device=device, net=net, optim=optim, sampler=sampler)
+    start=output_dict['start'] #unpack dict
 
-start=output_dict['start'] #unpack dict
 net=output_dict['net']
 optim=output_dict['optim']
 sampler=output_dict['sampler']
@@ -273,4 +274,3 @@ for epoch in range(start, epochs+1):
     the_last_loss = the_current_loss
 
 print("\nDone")
-writer.write_to_file(filename)
