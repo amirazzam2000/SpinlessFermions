@@ -254,13 +254,13 @@ for epoch in range(start, epochs+1):
                     model_path)
         writer.write_to_file(filename)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s)        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start))
+    the_current_loss = loss.item()
+    loss_diff = np.abs(the_current_loss - the_last_loss)
+
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.4f        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff))
     sys.stdout.flush()
 
-    the_current_loss = loss.item()
-           #print('The current loss:', the_current_loss)
-
-    if np.abs(the_current_loss - the_last_loss) < delta:
+    if loss_diff < delta:
         trigger_times += 1
 
         if trigger_times >= patience:
@@ -268,7 +268,6 @@ for epoch in range(start, epochs+1):
             break
 
     else:
-        #print('trigger times: 0')
         trigger_times = 0
 
     the_last_loss = the_current_loss
