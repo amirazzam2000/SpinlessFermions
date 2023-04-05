@@ -273,3 +273,4 @@ for epoch in range(start, epochs+1):
     the_last_loss = the_current_loss
 
 print("\nDone")
+writer.write_to_file(filename)
