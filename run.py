@@ -40,6 +40,7 @@ parser.add_argument("--epochs",             type=int,   default=10000, help="Num
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The name of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
+parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
 
 args = parser.parse_args()
 
@@ -51,6 +52,8 @@ model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
+
+directory = args.dir 
 
 nwalkers=4096
 n_sweeps=10 #n_discard
@@ -179,6 +182,8 @@ model_path = "results/energy/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_
                  optim.__class__.__name__, False, device, dtype) if model_name is None else model_name
 filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s.csv" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
+                 optim.__class__.__name__, False, device, dtype) if directory is None else directory.rstrip('\\') + "/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s.csv" % \
+                (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
                  optim.__class__.__name__, False, device, dtype)
 
 
@@ -200,6 +205,7 @@ patience = 10
 trigger_times = 0
 num_iterations = 0
 delta = 1e-4
+error_tolerance = 0
 
 print("early stopping active")
 #Energy Minimisation
@@ -265,13 +271,18 @@ for epoch in range(start, epochs+1):
 
     if loss_diff < delta:
         trigger_times += 1
+        if trigger_times == 1:
+            error_tolerance = 0
 
         if trigger_times >= patience:
             print('Early stopping!')
             break
 
     else:
-        trigger_times = 0
+        error_tolerance += 1
+        if error_tolerance >= 2:
+            trigger_times = 0
+            error_tolerance = 0
 
     the_last_loss = the_current_loss
 
