@@ -1,6 +1,6 @@
 import sys, os
 
-model_name = "./partial_data/model-1"
+model_name = "./partial_data/model-pre-twice"
 directory = "results/energy/data/pre_twice"
 
 os.system("python3 run.py -V 10 -S 0.3 -M {} -DIR {}".format(model_name, directory))
