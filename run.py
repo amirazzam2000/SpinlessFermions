@@ -188,7 +188,6 @@ filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%
 
 
 print("saving model at:", model_path)
-print("output training log", filename)
 
 writer = load_dataframe(filename)
 
