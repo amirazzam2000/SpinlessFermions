@@ -192,16 +192,21 @@ print("saving model at:", model_path)
 writer = load_dataframe(filename)
 
 if load_model_name is not None:
-    output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler)
+    output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler, fix_size=True)
+    sampler = MetropolisHastings(network=net,
+                                 dof=nfermions,
+                                 nwalkers=nwalkers,
+                                 target_acceptance=target_acceptance)
+    optim = torch.optim.Adam(params=net.parameters(), lr=1e-4)
     start =0
     print('loading pre-trained model')
 else :
     output_dict = load_model(model_path=model_path, device=device, net=net, optim=optim, sampler=sampler)
-    start=output_dict['start'] #unpack dict
+    start = output_dict['start']  # unpack dict
+    optim = output_dict['optim']
+    sampler = output_dict['sampler']
 
 net=output_dict['net']
-optim=output_dict['optim']
-sampler=output_dict['sampler']
 
 the_last_loss = 100
 patience = 10

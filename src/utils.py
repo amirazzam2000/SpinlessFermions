@@ -113,7 +113,7 @@ def load_dataframe(filename: str) -> WriteToFile:
     return writer
 
 
-def load_model(model_path: str, device: torch.device, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module) -> dict:
+def load_model(model_path: str, device: torch.device, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module,fix_size=False) -> dict:
         #, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module):
     r"""A function to load in an object saved from `torch.save` if the file exists already. The method returns a dict 
     """
@@ -122,7 +122,12 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
         state_dict = torch.load(f=model_path, map_location=device)
 
         start=state_dict['epoch']+1 #start at next epoch
-        net.load_state_dict(state_dict['model_state_dict'])
+        state_net = state_dict['model_state_dict']
+        if fix_size: 
+            for n, p in net.named_parameters():
+                if state_net[n].shape != p.shape:
+                    state_net[n].resize_(p.shape)
+        net.load_state_dict(state_net)
         optim.load_state_dict(state_dict['optim_state_dict'])
         optim._steps = start        #update epoch in optim too!
         loss = state_dict['loss']
