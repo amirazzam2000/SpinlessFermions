@@ -124,12 +124,12 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
         start=state_dict['epoch']+1 #start at next epoch
         state_net = state_dict['model_state_dict']
         if fix_size: 
-            for n, p in net.named_parameters():
-                if state_net[n].shape != p.shape:
-                    print(n, ":", p.shape, "|", state_net[n].shape)
-                    state_net[n].resize_(p.shape)
-                    print(state_net[n].shape)
-        net.load_state_dict(state_net)
+            net1_dict = net.state_dict()
+            pretrained_dict = {k: v for k, v in state_net.items() if k in net1_dict and state_net[k].shape == net1_dict[k].shape}
+            net1_dict.update(pretrained_dict)
+            net.load_state_dict(net1_dict)
+        else:
+            net.load_state_dict(state_net)
         optim.load_state_dict(state_dict['optim_state_dict'])
         optim._steps = start        #update epoch in optim too!
         loss = state_dict['loss']
