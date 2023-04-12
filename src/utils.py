@@ -126,7 +126,9 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
         if fix_size: 
             for n, p in net.named_parameters():
                 if state_net[n].shape != p.shape:
+                    print(n, ":", p.shape, "|", state_net[n].shape)
                     state_net[n].resize_(p.shape)
+                    print(state_net[n].shape)
         net.load_state_dict(state_net)
         optim.load_state_dict(state_dict['optim_state_dict'])
         optim._steps = start        #update epoch in optim too!
