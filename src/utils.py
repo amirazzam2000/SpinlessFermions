@@ -113,7 +113,7 @@ def load_dataframe(filename: str) -> WriteToFile:
     return writer
 
 
-def load_model(model_path: str, device: torch.device, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module,fix_size=False) -> dict:
+def load_model(model_path: str, device: torch.device, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module,fix_size=False, freeze=False) -> dict:
         #, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module):
     r"""A function to load in an object saved from `torch.save` if the file exists already. The method returns a dict 
     """
@@ -128,6 +128,12 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
             pretrained_dict = {k: v for k, v in state_net.items() if k in net1_dict and state_net[k].shape == net1_dict[k].shape}
             net1_dict.update(pretrained_dict)
             net.load_state_dict(net1_dict)
+            if freeze:
+                for n, p in net.named_parameters():
+                    if state_net[n].shape == p.shape and (state_net[n] == p).all().item():
+                        p.requires_grad = False
+            for n, p in net.named_parameters():
+                print(n, "grad: ", p.requires_grad)
         else:
             net.load_state_dict(state_net)
         optim.load_state_dict(state_dict['optim_state_dict'])

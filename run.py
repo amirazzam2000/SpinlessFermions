@@ -9,7 +9,7 @@ torch.set_printoptions(4)
 torch.backends.cudnn.benchmark=True
 torch.set_default_dtype(torch.float32)
 
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device('cpu')# if not torch.cuda.is_available() else torch.device('cuda')
 dtype = str(torch.get_default_dtype()).split('.')[-1]
 
 sys.path.append("./src/")
@@ -38,6 +38,7 @@ parser.add_argument("-S", "--sigma0",       type=float, default=0.5,   help="Int
 parser.add_argument("--preepochs",          type=int,   default=10000, help="Number of pre-epochs for the pretraining phase")
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
+parser.add_argument("-F", "--freeze",       type=bool,   default=0,     help="freeze the first layers of the neural network when it's loaded.")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
@@ -50,6 +51,7 @@ num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
+freeze = True if args.freeze != 0 else False      #the name of the model
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
@@ -91,7 +93,7 @@ calc_elocal = HOw1D(net=net, V0=V0, sigma0=sigma0, nchunks=nchunks)
 
 HO = HermitePolynomialMatrix(num_particles=nfermions)
 
-optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) 
+optim = torch.optim.Adam(params=net.parameters(), lr=1e-5) 
 
 gs_CI = get_groundstate(A=nfermions, V0=V0, datapath="groundstate/")
 
@@ -146,8 +148,9 @@ for preepoch in range(start, preepochs+1):
     stats['epoch'] = [preepoch] 
     stats['loss_mean'] = mean_preloss.item()
     stats['loss_std'] = stddev_preloss.item()
-    stats['proposal_width'] = sampler.sigma
-    stats['acceptance_rate'] = sampler.acceptance_rate
+    stats['proposal_width'] = sampler.sigma.item()
+    stats['acceptance_rate'] = sampler.acceptance_rate if not isinstance(
+        sampler.acceptance_rate, Tensor) else sampler.acceptance_rate.item()
     
     stats['walltime'] = end-start
 
@@ -177,14 +180,14 @@ print("\n")
 net.pretrain = False #check it's false
 optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 
-model_path = "results/energy/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_chkp.pt" % \
+model_path = "results/energy/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
-                 optim.__class__.__name__, False, device, dtype) if model_name is None else model_name
-filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s.csv" % \
+                 optim.__class__.__name__, False, device, dtype, freeze) if model_name is None else model_name
+filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s.csv" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
-                 optim.__class__.__name__, False, device, dtype) if directory is None else directory.rstrip('\\') + "/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s.csv" % \
+                 optim.__class__.__name__, False, device, dtype, freeze) if directory is None else directory.rstrip('\\') + "/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s.csv" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-                 optim.__class__.__name__, False, device, dtype)
+                 optim.__class__.__name__, False, device, dtype, freeze)
 
 
 print("saving model at:", model_path)
@@ -192,7 +195,7 @@ print("saving model at:", model_path)
 writer = load_dataframe(filename)
 
 if load_model_name is not None:
-    output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler, fix_size=True)
+    output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler, fix_size=True, freeze = freeze)
     sampler = MetropolisHastings(network=net,
                                  dof=nfermions,
                                  nwalkers=nwalkers,
