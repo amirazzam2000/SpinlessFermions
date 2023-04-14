@@ -93,7 +93,7 @@ calc_elocal = HOw1D(net=net, V0=V0, sigma0=sigma0, nchunks=nchunks)
 
 HO = HermitePolynomialMatrix(num_particles=nfermions)
 
-lr = 1e-5
+lr = 1e-6
 optim = torch.optim.Adam(params=net.parameters(), lr=lr) 
 
 gs_CI = get_groundstate(A=nfermions, V0=V0, datapath="groundstate/")
@@ -184,11 +184,11 @@ optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 model_path = "results/energy/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
                  optim.__class__.__name__, False, device, dtype, freeze) if model_name is None else model_name
-filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s.csv" % \
+filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
-                 optim.__class__.__name__, False, device, dtype, freeze) if directory is None else directory.rstrip('\\') + "/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s.csv" % \
+                 optim.__class__.__name__, False, device, dtype, freeze, lr) if directory is None else directory.rstrip('\\') + "/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-                 optim.__class__.__name__, False, device, dtype, freeze)
+                 optim.__class__.__name__, False, device, dtype, freeze, lr)
 
 
 print("saving model at:", model_path)
