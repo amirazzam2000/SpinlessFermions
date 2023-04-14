@@ -93,7 +93,8 @@ calc_elocal = HOw1D(net=net, V0=V0, sigma0=sigma0, nchunks=nchunks)
 
 HO = HermitePolynomialMatrix(num_particles=nfermions)
 
-optim = torch.optim.Adam(params=net.parameters(), lr=1e-5) 
+lr = 1e-5
+optim = torch.optim.Adam(params=net.parameters(), lr=lr) 
 
 gs_CI = get_groundstate(A=nfermions, V0=V0, datapath="groundstate/")
 
@@ -200,7 +201,7 @@ if load_model_name is not None:
                                  dof=nfermions,
                                  nwalkers=nwalkers,
                                  target_acceptance=target_acceptance)
-    optim = torch.optim.Adam(params=net.parameters(), lr=1e-4)
+    optim = torch.optim.Adam(params=net.parameters(), lr=lr)
     start =0
     print('loading pre-trained model')
 else :
