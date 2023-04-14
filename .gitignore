@@ -2,3 +2,4 @@ playground.ipynb
 results/
 src/__pycache__/
 partial_data/
+out/
