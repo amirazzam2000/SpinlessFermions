@@ -1,13 +1,11 @@
 """Class that represents the network to be evolved."""
 import random
 import logging
-from model import HarmonicModel
 import torch
 from torch import nn
 import pickle
 from math import isnan
 import numpy as np
-from energy import get_energy
 
 
 class Network():
@@ -21,48 +19,23 @@ class Network():
 
         Args:
             nn_param_choices (dict): Parameters for the network, includes:
-                        'nb_neurons': [4, 8, 16],
-                        'nb_layers': [1, 2, 3, 4],
-                        'activation': ['relu', 'tanh', 'sigmoid', ''],
-                        # 'pretraining_V0' : [-20, -10, -5, 0, 5, 10, 20],
-                        # 'pretraining_L' : [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+                        'num_layers': [1, 2, 3, 4],
+                        'num_hidden': [4, 8, 16],
+                        'preepochs': [1, 2, 3, 4],
+                        'load_model_name': [1, 2, 3, 4]
 
         """
         self.accuracy = 0.
         self.iter = 0.
         self.nn_param_choices = nn_param_choices
         self.network = {}  # (dic): represents MLP network parameters
-        self.net = HarmonicModel()
+        
 
     def create_random(self):
         """Create a random network."""
         for key in self.nn_param_choices:
             self.network[key] = random.choice(self.nn_param_choices[key])
-        ########### TODO: FUTURE DEVELOPMENT: make it so we select an activation per-layer #####################
 
-        # Get our network parameters.
-        nb_layers = self.network['nb_layers']
-        nb_neurons = self.network['nb_neurons']
-        activation = self.network['activation']
-        # pre_v0 = self.network['pretraining_V0']
-        # pre_L = self.network['pretraining_L']
-        mesh = [-10, 10]
-        mesh_density = 200
-
-        self.net = HarmonicModel(mesh, mesh_density, pretraining=None)
-        # self.net = HarmonicModel(mesh, mesh_density, pretraining=[pre_v0, pre_L])
-
-        w1 = torch.rand(nb_neurons, 1, requires_grad=True) * (-1.)
-        b = torch.rand(nb_neurons, requires_grad=True) * \
-            2. - 1.    # Set of bias parameters
-
-        self.net.add(nn.Linear(1, nb_neurons, bias=True), w1, b, activation)
-
-        for _ in range(nb_layers):
-            self.net.add(nn.Linear(nb_neurons, nb_neurons,
-                         bias=True), activation=activation)
-
-        self.net.add(nn.Linear(nb_neurons, 1, bias=True))
 
     def create_set(self, network):
         """Set network properties.
@@ -71,33 +44,8 @@ class Network():
             network (dict): The network parameters
 
         """
-        self.network = network
+        self.network = network        
 
-        # Get our network parameters.
-        nb_layers = self.network['nb_layers']
-        nb_neurons = self.network['nb_neurons']
-        activation = self.network['activation']
-        # pre_v0 = self.network['pretraining_V0']
-        # pre_L = self.network['pretraining_L']
-        mesh = [-10, 10]
-        mesh_density = 200
-
-        self.net = HarmonicModel(mesh, mesh_density, pretraining=None)
-        # self.net = HarmonicModel(mesh, mesh_density, pretraining=[pre_v0, pre_L])
-
-        w1 = torch.rand(nb_neurons, 1, requires_grad=True) * (-1.)
-        b = torch.rand(nb_neurons, requires_grad=True) * \
-            2. - 1.    # Set of bias parameters
-
-        self.net.add(nn.Linear(1, nb_neurons, bias=True), w1, b, activation)
-
-        for _ in range(nb_layers):
-            self.net.add(nn.Linear(nb_neurons, nb_neurons,
-                         bias=False), activation=activation)
-
-        self.net.add(nn.Linear(nb_neurons, 1, bias=False))
-
-        return self.net
 
     def train(self, dataset):
         """Train the network and record the accuracy.
