@@ -270,6 +270,7 @@ for epoch in range(start, epochs+1):
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
     stats['loss diff'] = loss_diff
+    stats['loss window'] = sliding_window_loss
     
     writer(stats)
 
