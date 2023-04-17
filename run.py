@@ -223,6 +223,7 @@ window_size = 10
 best_loss = float('inf')
 no_improvement_counter = 0
 validation_losses = []
+sliding_window_loss = 0
 
 print("early stopping active")
 #Energy Minimisation
@@ -269,6 +270,7 @@ for epoch in range(start, epochs+1):
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
     stats['loss diff'] = loss_diff
+    stats['widnow_loss'] = sliding_window_loss
     
     writer(stats)
 
