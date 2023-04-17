@@ -1,7 +1,7 @@
 import sys, os
 
 model_name = "./partial_data/A3_pre_twice"
-directory = "results/energy/data/A3_pre_twice"
+directory = "results/energy/data/A3_pre_twice_2"
 
 os.system("python3 run.py -V 10 -S 0.3 -M {} -DIR {} --epochs 100000".format(model_name, directory))
 

@@ -93,7 +93,7 @@ calc_elocal = HOw1D(net=net, V0=V0, sigma0=sigma0, nchunks=nchunks)
 
 HO = HermitePolynomialMatrix(num_particles=nfermions)
 
-lr = 1e-8
+lr = 1e-4
 optim = torch.optim.Adam(params=net.parameters(), lr=lr) 
 
 gs_CI = get_groundstate(A=nfermions, V0=V0, datapath="groundstate/")
