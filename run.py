@@ -270,7 +270,6 @@ for epoch in range(start, epochs+1):
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
     stats['loss diff'] = loss_diff
-    stats['widnow_loss'] = sliding_window_loss
     
     writer(stats)
 
@@ -287,8 +286,8 @@ for epoch in range(start, epochs+1):
                     model_path)
         writer.write_to_file(filename)
 
-
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.6f        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.6f | window loss: %6.6f      \r" %
+                     (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff, sliding_window_loss))
     sys.stdout.flush()
 
     if len(validation_losses) > window_size:
