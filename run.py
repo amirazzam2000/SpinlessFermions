@@ -213,11 +213,16 @@ else :
 net=output_dict['net']
 
 the_last_loss = 100
-patience = 10
+patience = 5
 trigger_times = 0
 num_iterations = 0
 delta = 1e-4
 error_tolerance = 0
+
+window_size = 10
+best_loss = float('inf')
+no_improvement_counter = 0
+validation_losses = []
 
 print("early stopping active")
 #Energy Minimisation
@@ -238,7 +243,8 @@ for epoch in range(start, epochs+1):
     with torch.no_grad():
         energy_var, energy_mean = torch.var_mean(elocal, unbiased=True)
 
-    loss=torch.mean(loss_elocal)   
+    loss=torch.mean(loss_elocal)  
+     
     
     optim.zero_grad()
     loss.backward()  #populates leafs with grads
@@ -258,6 +264,8 @@ for epoch in range(start, epochs+1):
     stats['walltime'] = end-start
 
     the_current_loss = loss.item()
+    validation_losses.append(the_current_loss)
+
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
     stats['loss diff'] = loss_diff
@@ -281,21 +289,39 @@ for epoch in range(start, epochs+1):
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.6f        \r" % (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff))
     sys.stdout.flush()
 
-    if loss_diff < delta:
-        trigger_times += 1
-        if trigger_times == 1:
-            error_tolerance = 0
+    if len(validation_losses) > window_size:
+        # Compute average validation loss over sliding window
+        sliding_window_loss = sum(validation_losses[-window_size:]) / window_size
 
-        if trigger_times >= patience:
-            print('Early stopping!')
+        if sliding_window_loss < best_loss:
+            # Update best loss and reset counter
+            best_loss = sliding_window_loss
+            no_improvement_counter = 0
+        else:
+            # Increment counter
+            no_improvement_counter += 1
+
+        # Check if training should stop
+        if no_improvement_counter == patience:
+            print("Validation loss has not improved for",
+                  patience, "sliding windows. Stopping training.")
             break
 
-    else:
-        error_tolerance += 1
-        if error_tolerance >= 2:
-            trigger_times = 0
-            error_tolerance = 0
+    # if loss_diff < delta:
+    #     trigger_times += 1
+    #     if trigger_times == 1:
+    #         error_tolerance = 0
 
-    the_last_loss = the_current_loss
+    #     if trigger_times >= patience:
+    #         print('Early stopping!')
+    #         break
+
+    # else:
+    #     error_tolerance += 1
+    #     if error_tolerance >= 2:
+    #         trigger_times = 0
+    #         error_tolerance = 0
+
+    # the_last_loss = the_current_loss
 
 print("\nDone")
