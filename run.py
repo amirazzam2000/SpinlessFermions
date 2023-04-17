@@ -219,7 +219,7 @@ num_iterations = 0
 delta = 1e-4
 error_tolerance = 0
 
-window_size = 5
+window_size = 10
 best_loss = float('inf')
 no_improvement_counter = 0
 validation_losses = []
@@ -294,7 +294,7 @@ for epoch in range(start, epochs+1):
         # Compute average validation loss over sliding window
         sliding_window_loss = sum(validation_losses[-window_size:]) / window_size
 
-        if sliding_window_loss < best_loss :
+        if sliding_window_loss <= best_loss :
             # Update best loss and reset counter
             best_loss = sliding_window_loss
             no_improvement_counter = 0
