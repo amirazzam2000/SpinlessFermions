@@ -213,7 +213,7 @@ else :
 net=output_dict['net']
 
 the_last_loss = 100
-patience = 15
+patience = 20
 trigger_times = 0
 num_iterations = 0
 delta = 1e-4
