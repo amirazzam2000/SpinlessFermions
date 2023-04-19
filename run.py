@@ -269,7 +269,7 @@ for epoch in range(start, epochs+1):
 
     the_current_loss = loss.item()
     mean_energy_list.append(energy_mean)
-    var_energy_list.append(energy_var)
+    var_energy_list.append(np.sqrt(energy_var / nwalkers))
 
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
@@ -299,10 +299,9 @@ for epoch in range(start, epochs+1):
         # Compute average validation loss over sliding window
         sliding_window_loss = np.average(mean_energy_list) 
         
-        var_list = np.sqrt(np.array(var_energy_list) / nwalkers)
 
-        min_intervals = mean_energy_list - var_list
-        max_intervals = mean_energy_list + var_list
+        min_intervals = mean_energy_list - var_energy_list
+        max_intervals = mean_energy_list + var_energy_list
 
 
         sorted_var = sorted(zip(min_intervals, max_intervals), key= lambda inter: inter[0])
