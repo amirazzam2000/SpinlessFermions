@@ -38,7 +38,8 @@ parser.add_argument("-S", "--sigma0",       type=float, default=0.5,   help="Int
 parser.add_argument("--preepochs",          type=int,   default=10000, help="Number of pre-epochs for the pretraining phase")
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
-parser.add_argument("-F", "--freeze",       type=bool,   default=0,     help="freeze the first layers of the neural network when it's loaded.")
+# parser.add_argument("-F", "--freeze",       type=bool,   default=0,     help="freeze the first layers of the neural network when it's loaded.")
+parser.add_argument('-F', '--freeze', default=False, action=argparse.BooleanOptionalAction, help="freeze the first layers of the neural network when it's loaded.")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
@@ -51,7 +52,7 @@ num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
-freeze = True if args.freeze != 0 else False      #the name of the model
+freeze = args.freeze      
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
@@ -219,12 +220,13 @@ num_iterations = 0
 delta = 1e-4
 error_tolerance = 0
 
-window_size = 10
-best_loss = -float('inf')
-no_improvement_counter = 0
-validation_losses = []
+window_size = 500
+mean_energy_list = []
+var_energy_list = []
 sliding_window_loss = 0
 last_window_loss = 0
+avg_loss_diff = 0
+avg_coverage = 0
 
 print("early stopping active")
 #Energy Minimisation
@@ -243,7 +245,7 @@ for epoch in range(start, epochs+1):
     loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
     
     with torch.no_grad():
-        energy_var, energy_mean = torch.var_mean(elocal, unbiased=True)
+        energy_var, energy_mean = torch.var_mean(elocal, unbiased=True) # sqrt(var/ num_walkers) 
 
     loss=torch.mean(loss_elocal)  
      
@@ -266,12 +268,13 @@ for epoch in range(start, epochs+1):
     stats['walltime'] = end-start
 
     the_current_loss = loss.item()
-    validation_losses.append(the_current_loss)
+    mean_energy_list.append(energy_mean)
+    var_energy_list.append(energy_var)
 
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
     stats['loss diff'] = loss_diff
-    stats['loss window'] = sliding_window_loss
+    stats['avg window loss diff'] = avg_loss_diff
     
     writer(stats)
 
@@ -288,28 +291,37 @@ for epoch in range(start, epochs+1):
                     model_path)
         writer.write_to_file(filename)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | loss difference: %6.6f | window loss: %6.6f      \r" %
-                     (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, loss_diff, sliding_window_loss))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | window loss difference: %6.6f | avg overlap : %6.6f    \r" %
+                     (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, avg_loss_diff, avg_coverage))
     sys.stdout.flush()
 
-    if len(validation_losses) > window_size:
+    if len(mean_energy_list) > window_size:
         # Compute average validation loss over sliding window
-        sliding_window_loss = np.average(validation_losses) 
-        validation_losses = []
+        sliding_window_loss = np.average(mean_energy_list) 
+        
+        var_list = np.sqrt(np.array(var_energy_list) / nwalkers)
 
-        # if sliding_window_loss > best_loss :
-        #     # Update best loss and reset counter
-        #     no_improvement_counter = 0
-        # else:
-        #     # Increment counter
-        #     best_loss = sliding_window_loss
-        #     no_improvement_counter += 1
+        min_intervals = mean_energy_list - var_list
+        max_intervals = mean_energy_list + var_list
 
-        # # Check if training should stop
-        # if no_improvement_counter == patience:
-        #     print(r"\n", "Validation loss has not improved for",
-        #           patience, "sliding windows. Stopping training.")
-        #     break
+
+        sorted_var = sorted(zip(min_intervals, max_intervals), key= lambda inter: inter[0])
+
+        min_inter, max_inter = zip(*sorted_var)
+
+        overlap_matrix = np.zeros((window_size, window_size))
+        for i in range(window_size - 1):
+            for j in range(i + 1, window_size):
+                if max_inter[i] > min_inter[j]:
+                    overlap_matrix[i, j] = 1
+
+        overlap_matrix = overlap_matrix + overlap_matrix.T
+
+        avg_coverage = np.mean(np.sum(overlap_matrix, axis=1)) / window_size
+
+
+        mean_energy_list = []
+        var_energy_list = []
 
         avg_loss_diff = np.abs(sliding_window_loss - last_window_loss)
 
