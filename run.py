@@ -29,6 +29,16 @@ parser = argparse.ArgumentParser(prog="SpinlessFermions",
                                  description="A Neural Quantum State (NQS) solution to one-dimensional fermions interacting in a Harmonic trap",
                                  epilog="and fin")
 
+
+def add_bool_arg(parser, name, short, help="", default=False):
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument('-' + short, '--' + name,
+                       dest=name, action='store_true', help="")
+    group.add_argument('-no-' + short, '--no-' + name,
+                       dest=name, action='store_false')
+    parser.set_defaults(**{name: default})
+
+
 parser.add_argument("-N", "--num_fermions", type=int,   default=2,     help="Number of fermions in physical system")
 parser.add_argument("-H", "--num_hidden",   type=int,   default=64,    help="Number of hidden neurons per layer")
 parser.add_argument("-L", "--num_layers",   type=int,   default=2,     help="Number of layers within the network")
@@ -39,7 +49,8 @@ parser.add_argument("--preepochs",          type=int,   default=10000, help="Num
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
 # parser.add_argument("-F", "--freeze",       type=bool,   default=0,     help="freeze the first layers of the neural network when it's loaded.")
-parser.add_argument('-F', '--freeze', default=False, action=argparse.BooleanOptionalAction, help="freeze the first layers of the neural network when it's loaded.")
+# parser.add_argument('-F', '--freeze', default=False, action=argparse.BooleanOptionalAction, help="freeze the first layers of the neural network when it's loaded.")
+add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
