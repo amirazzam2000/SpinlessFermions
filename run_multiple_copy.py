@@ -16,17 +16,19 @@ import sys
 import os
 import time
 
-directory = "./results/energy/data/A3_new_stopping4"
-model_name = "./partial_data/model-A3-V5-es4.new"
+directory = "./results/energy/data/A3_new_stopping6-experimental"
+model_name = "./partial_data/model-A3-V5-es6.new"
 
-os.remove(model_name)
+if os.path.exists(model_name):
+    os.remove(model_name)
 
 os.system("python3 run.py -V 5 -S 0.3 -N 2 -M {} -DIR {} --epochs 100000".format(model_name, directory))
+# os.system("python3 run.py -V 5 -S 0.3 -N 3 -M {} -DIR {} --epochs 100000 --preepochs 0".format(model_name, directory))
 
-t0 = time.time()
-os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} -DIR {} --epochs 100000 --preepochs 0".format(model_name, directory))
-print(time.time() - t0)
+# t0 = time.time()
+# os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} -DIR {} --epochs 100000 --preepochs 0".format(model_name, directory))
+# print(time.time() - t0)
 
-t0 = time.time()
-os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
-print(time.time() - t0)
+# t0 = time.time()
+# os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
+# print(time.time() - t0)
