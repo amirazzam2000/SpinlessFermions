@@ -238,6 +238,7 @@ sliding_window_loss = 0
 last_window_loss = 0
 avg_loss_diff = 0
 avg_coverage = 0
+old_slope = 0 
 
 print("early stopping active")
 #Energy Minimisation
@@ -270,7 +271,7 @@ for epoch in range(start, epochs+1):
     stats['epoch'] = [epoch] #must pass index
     stats['loss'] = loss.item() 
     stats['energy_mean'] = energy_mean.item() 
-    stats['energy_std'] = energy_var.sqrt().item() 
+    stats['energy_std'] = np.sqrt(energy_var.item() / nwalkers) #energy_var.sqrt().item() 
     stats['CI'] = gs_CI
     stats['proposal_width'] = sampler.sigma.item() 
     stats['acceptance_rate'] = sampler.acceptance_rate if not isinstance(
@@ -284,8 +285,9 @@ for epoch in range(start, epochs+1):
 
     loss_diff = np.abs(the_current_loss - the_last_loss)
 
-    stats['loss diff'] = loss_diff
-    stats['avg window loss diff'] = avg_loss_diff
+    stats['loss_diff'] = loss_diff
+    stats['window_loss'] = avg_loss_diff
+    stats['overlap'] = avg_coverage
     
     writer(stats)
 
@@ -307,36 +309,43 @@ for epoch in range(start, epochs+1):
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
-        # Compute average validation loss over sliding window
-        sliding_window_loss = np.average(mean_energy_list) 
-        
+        # Compute the weighted average validation loss over sliding window
+        sliding_window_loss = np.sum(mean_energy_list/np.array(var_energy_list)) / np.sum(1/np.array(var_energy_list)) 
+
+        mean_loss = np.mean(mean_energy_list)
+
+        a, _ = np.polyfit(range(len(mean_energy_list)), mean_energy_list, 1)
+
+        slop_diff = np.abs(old_slope - a)
+
         print()
-        print(np.average(var_energy_list))
+        print()
+        print("mean energy = ", mean_loss, "| average energy = ", sliding_window_loss , "| data slope = ", a , "| slop diff = ", slop_diff)
         print("-"*10)
 
-        min_intervals = mean_energy_list - np.array(var_energy_list)
-        max_intervals = mean_energy_list + np.array(var_energy_list)
+        # min_intervals = mean_energy_list - np.array(var_energy_list)
+        # max_intervals = mean_energy_list + np.array(var_energy_list)
 
 
-        sorted_var = sorted(zip(min_intervals, max_intervals), key= lambda inter: inter[0])
+        # sorted_var = sorted(zip(min_intervals, max_intervals), key= lambda inter: inter[0])
 
-        min_inter, max_inter = zip(*sorted_var)
+        # min_inter, max_inter = zip(*sorted_var)
         # print(min_inter)
         # print("-"*10)
 
-        overlap_matrix = np.zeros((window_size, window_size))
-        for i in range(window_size - 1):
-            for j in range(i + 1, window_size):
-                if max_inter[i] > min_inter[j]:
-                    overlap_matrix[i, j] = 1
+        # overlap_matrix = np.zeros((window_size, window_size))
+        # for i in range(window_size - 1):
+        #     for j in range(i + 1, window_size):
+        #         if max_inter[i] > min_inter[j]:
+        #             overlap_matrix[i, j] = 1
 
-        overlap_matrix = overlap_matrix + overlap_matrix.T
+        # overlap_matrix = overlap_matrix + overlap_matrix.T
 
-        overlap_vec = np.sum(overlap_matrix, axis=1)
-        # print(overlap_vec)
-        aux_avg = np.average(overlap_vec)
-        # print(aux_avg)
-        avg_coverage = aux_avg / window_size
+        # overlap_vec = np.sum(overlap_matrix, axis=1)
+        # # print(overlap_vec)
+        # aux_avg = np.average(overlap_vec)
+        # # print(aux_avg)
+        # avg_coverage = aux_avg / window_size
 
 
         mean_energy_list = []
@@ -344,9 +353,9 @@ for epoch in range(start, epochs+1):
 
         avg_loss_diff = np.abs(sliding_window_loss - last_window_loss)
 
-        if avg_coverage >= 0.9:
-            print(r'\nEarly stopping cuz overlap!')
-            break
+        # if avg_coverage >= 0.85:
+        #     print('Early stopping cuz overlap!')
+        #     # break
 
         if avg_loss_diff < delta:
             trigger_times += 1
@@ -354,8 +363,8 @@ for epoch in range(start, epochs+1):
                 error_tolerance = 0
 
             if trigger_times >= patience:
-                print(r'\nEarly stopping cuz energy!')
-                break
+                print('Early stopping cuz energy!')
+                # break
 
         else:
             error_tolerance += 1
@@ -364,6 +373,7 @@ for epoch in range(start, epochs+1):
                 error_tolerance = 0
 
         last_window_loss = sliding_window_loss
+        old_slope = a 
     the_last_loss = the_current_loss
 
 print("\nDone")
