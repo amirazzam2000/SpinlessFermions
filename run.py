@@ -48,9 +48,8 @@ parser.add_argument("-S", "--sigma0",       type=float, default=0.5,   help="Int
 parser.add_argument("--preepochs",          type=int,   default=10000, help="Number of pre-epochs for the pretraining phase")
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
-# parser.add_argument("-F", "--freeze",       type=bool,   default=0,     help="freeze the first layers of the neural network when it's loaded.")
-# parser.add_argument('-F', '--freeze', default=False, action=argparse.BooleanOptionalAction, help="freeze the first layers of the neural network when it's loaded.")
 add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
+add_bool_arg(parser, 'no_early_stopping', 'NoES', default=True, help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
@@ -63,7 +62,8 @@ num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
-freeze = args.freeze      
+freeze = args.freeze    
+early_stopping_active = args.no_early_stopping
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
@@ -215,7 +215,12 @@ if load_model_name is not None:
                                  target_acceptance=target_acceptance)
     optim = torch.optim.Adam(params=net.parameters(), lr=lr)
     start =0
+    print()
     print('loading pre-trained model')
+    print("freezing = ", freeze)
+    if freeze:
+        print("reduced number of parameters is: ",  count_parameters(net))
+
 else :
     output_dict = load_model(model_path=model_path, device=device, net=net, optim=optim, sampler=sampler)
     start = output_dict['start']  # unpack dict
@@ -225,10 +230,10 @@ else :
 net=output_dict['net']
 
 the_last_loss = 100
-patience = 10
+patience = 5
 trigger_times = 0
 num_iterations = 0
-delta = 1e-4
+delta = 1e-2
 error_tolerance = 0
 
 window_size = 500
@@ -240,7 +245,10 @@ avg_loss_diff = 0
 avg_coverage = 0
 old_slope = 0 
 
-print("early stopping active")
+total_time = 0
+
+print("early stopping = ", early_stopping_active)
+print()
 #Energy Minimisation
 for epoch in range(start, epochs+1):
     stats={}
@@ -268,6 +276,7 @@ for epoch in range(start, epochs+1):
 
     end = sync_time()
 
+    total_time = end - start
     stats['epoch'] = [epoch] #must pass index
     stats['loss'] = loss.item() 
     stats['energy_mean'] = energy_mean.item() 
@@ -323,52 +332,33 @@ for epoch in range(start, epochs+1):
         print("mean energy = ", mean_loss, "| average energy = ", sliding_window_loss , "| data slope = ", a , "| slop diff = ", slop_diff)
         print("-"*10)
 
-        # min_intervals = mean_energy_list - np.array(var_energy_list)
-        # max_intervals = mean_energy_list + np.array(var_energy_list)
-
-
-        # sorted_var = sorted(zip(min_intervals, max_intervals), key= lambda inter: inter[0])
-
-        # min_inter, max_inter = zip(*sorted_var)
-        # print(min_inter)
-        # print("-"*10)
-
-        # overlap_matrix = np.zeros((window_size, window_size))
-        # for i in range(window_size - 1):
-        #     for j in range(i + 1, window_size):
-        #         if max_inter[i] > min_inter[j]:
-        #             overlap_matrix[i, j] = 1
-
-        # overlap_matrix = overlap_matrix + overlap_matrix.T
-
-        # overlap_vec = np.sum(overlap_matrix, axis=1)
-        # # print(overlap_vec)
-        # aux_avg = np.average(overlap_vec)
-        # # print(aux_avg)
-        # avg_coverage = aux_avg / window_size
-
-
         mean_energy_list = []
         var_energy_list = []
 
         avg_loss_diff = np.abs(sliding_window_loss - last_window_loss)
 
-        # if avg_coverage >= 0.85:
-        #     print('Early stopping cuz overlap!')
-        #     # break
 
         if avg_loss_diff < delta:
-            trigger_times += 1
-            if trigger_times == 1:
-                error_tolerance = 0
+            if a < 3e-7 and old_slope < 3e-7 and slop_diff < 3e-7:
+                # print('\nEarly stopping cuz slope!')
+                # if early_stopping_active:
+                #     break
 
-            if trigger_times >= patience:
-                print('Early stopping cuz energy!')
-                # break
+                print("\n triggered.")
+
+                trigger_times += 1
+                if trigger_times == 1:
+                    error_tolerance = 0
+
+                if trigger_times >= patience:
+                    print('\nEarly stopping cuz energy!')
+                    if early_stopping_active:
+                        break
 
         else:
             error_tolerance += 1
             if error_tolerance >= 2:
+                print("\n reset trigger")
                 trigger_times = 0
                 error_tolerance = 0
 
@@ -377,3 +367,4 @@ for epoch in range(start, epochs+1):
     the_last_loss = the_current_loss
 
 print("\nDone")
+print("\nTime taken: ", total_time, "\n")
