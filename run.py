@@ -230,7 +230,7 @@ else :
 net=output_dict['net']
 
 the_last_loss = 100
-patience = 5
+patience = 10
 trigger_times = 0
 num_iterations = 0
 delta = 1e-2
@@ -250,6 +250,7 @@ total_time = 0
 print("early stopping = ", early_stopping_active)
 print()
 #Energy Minimisation
+t0 = time.time()
 for epoch in range(start, epochs+1):
     stats={}
 
@@ -351,7 +352,7 @@ for epoch in range(start, epochs+1):
                     error_tolerance = 0
 
                 if trigger_times >= patience:
-                    print('\nEarly stopping cuz energy!')
+                    print('\nEarly stopping!')
                     if early_stopping_active:
                         break
 
@@ -366,5 +367,6 @@ for epoch in range(start, epochs+1):
         old_slope = a 
     the_last_loss = the_current_loss
 
+t1 = time.time() - t0
 print("\nDone")
-print("\nTime taken: ", total_time, "\n")
+print("\nTime taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
