@@ -128,9 +128,12 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
             pretrained_dict = {k: v for k, v in state_net.items() if k in net1_dict and state_net[k].shape == net1_dict[k].shape}
             net1_dict.update(pretrained_dict)
             net.load_state_dict(net1_dict)
+            print("fix size = ", fix_size)
             if freeze:
+                print("freeze :) = ", freeze)
                 for n, p in net.named_parameters():
                     if state_net[n].shape == p.shape and (state_net[n] == p).all().item():
+                        print(p)
                         p.requires_grad = False
             for n, p in net.named_parameters():
                 print(n, "grad: ", p.requires_grad)
