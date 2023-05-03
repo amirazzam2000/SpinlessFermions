@@ -208,6 +208,7 @@ print("saving model at:", model_path)
 writer = load_dataframe(filename)
 
 if load_model_name is not None:
+    print("loading model ...")
     output_dict = load_model(model_path=load_model_name, device=device, net=net, optim=optim, sampler=sampler, fix_size=True, freeze = freeze)
     sampler = MetropolisHastings(network=net,
                                  dof=nfermions,
