@@ -203,7 +203,14 @@ filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%
                  optim.__class__.__name__, False, device, dtype, freeze, lr)
 
 
+
+time_filename = "results/energy/timing_data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+    (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+     optim.__class__.__name__, False, device, dtype, freeze, lr)
+
 print("saving model at:", model_path)
+
+writer_t = load_dataframe(filename)
 
 writer = load_dataframe(filename)
 
@@ -249,6 +256,8 @@ total_time = 0
 
 print("early stopping = ", early_stopping_active)
 print()
+
+
 #Energy Minimisation
 t0 = time.time()
 for epoch in range(start, epochs+1):
@@ -256,7 +265,11 @@ for epoch in range(start, epochs+1):
 
     start=sync_time()
 
+    t_MH = time.time()
     x, _ = sampler(n_sweeps)
+    stats['MH_time'] = time.time() - t_MH
+    # print("metropolis hasting time = ", time.time() - t_MH)
+    # print()
 
     elocal = calc_elocal(x)
     elocal = clip(elocal, clip_factor=5)
@@ -272,8 +285,18 @@ for epoch in range(start, epochs+1):
      
     
     optim.zero_grad()
+    t_MH = time.time()
     loss.backward()  #populates leafs with grads
+    stats['back_time'] = time.time() - t_MH
+
+    t_MH = time.time()
     optim.step()
+    stats['opt_time'] = time.time() - t_MH
+
+    net_time = net.pop_time_records()
+
+    for key, value in net_time.items():
+        stats[key] = np.average(value)
 
     end = sync_time()
 
@@ -315,7 +338,7 @@ for epoch in range(start, epochs+1):
         writer.write_to_file(filename)
 
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | window loss difference: %6.6f | avg overlap : %6.6f    \r" %
-                     (epoch, energy_mean, energy_var.sqrt(), gs_CI, end-start, avg_loss_diff, avg_coverage))
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), gs_CI, end-start, avg_loss_diff, avg_coverage))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
@@ -366,6 +389,24 @@ for epoch in range(start, epochs+1):
         last_window_loss = sliding_window_loss
         old_slope = a 
     the_last_loss = the_current_loss
+
+
+# time tests ----------------------------------------------------------------
+# time_records = net.get_time_records()
+
+writer.write_to_file(filename)
+# filename = "results/energy/data/timing_data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+#     (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+#      optim.__class__.__name__, False, device, dtype, freeze, lr)
+
+
+# writer_t = load_dataframe(filename)
+
+# import pandas as pd 
+# print(pd.DataFrame.from_dict(time_records))
+# writer_t(time_records)
+# writer_t.write_to_file(filename)
+# -------------------------------------------------------------
 
 t1 = time.time() - t0
 print("\nDone")

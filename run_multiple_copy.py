@@ -43,35 +43,59 @@ t0 = time.time()
 os.system("python3 run.py -V 5 -S 0.3 -N 4 -LM {} -DIR {} --epochs 100000 --preepochs 0 -NoES".format(model_name, directory))
 print(time.time() - t0)
 # Number of parameters:     8712
+# -----------------------------------------------------------------------
 # Epoch: 100000 | Energy: 8.8474 +/- 0.4033 | CI: 9.7266 | Walltime: 2.14e-01 (s) | window loss difference: 0.000336 | avg overlap : 0.000000
 
 # Time taken:  0.2144414649810642  (accumulated wall time)
 #          22570.24262905121 (recorded time)
+# -----------------------------------------------------------------------
+# Epoch: 100000 | Energy: 8.8345 +/- 0.3082 | CI: 9.7266 | Walltime: 2.21e-01 (s) | window loss difference: 0.000226 | avg overlap : 0.000000
+
+# Time taken:  0.2207625419832766  (accumulated wall time)
+#          22456.568216323853 (recorded time) [approx. 6.2 h]
 
 t0 = time.time()
 os.system("python3 run.py -V 5 -S 0.3 -N 5 -LM {} -DIR {} --epochs 100000 --preepochs 0 -NoES".format(model_name, directory))
 print(time.time() - t0)
 # Number of parameters:     8778
+# -----------------------------------------------------------------------
 # Epoch: 100000 | Energy: 14.0148 + /- 0.9321 | CI: 15.4063 | Walltime: 2.96e-01 (s) | window loss difference: 0.000941 | avg overlap: 0.000000
 
 # Time taken:  0.2957860060269013  (accumulated wall time)
 # 27859.32918214798 (recorded time)
+# -----------------------------------------------------------------------
+# Epoch: 100000 | Energy: 14.0104 +/- 0.7596 | CI: 15.4063 | Walltime: 3.42e-01 (s) | window loss difference: 0.000759 | avg overlap : 0.000000
+
+# Time taken:  0.3423790119122714  (accumulated wall time)
+#          33183.660689115524 (recorded time) [approx. 9.2 h]
+
 
 directory = "./results/energy/data/higher_N_ES"
 t0 = time.time()
 os.system("python3 run.py -V 5 -S 0.3 -N 4 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
 print(time.time() - t0)
 # reduced number of parameters is:  264
+# -----------------------------------------------------------------------
 # Epoch: 100000 | Energy: 8.8651 +/- 0.8032 | CI: 9.7266 | Walltime: 2.83e-01 (s) | window loss difference: 0.001732 | avg overlap : 0.000000
 
 # Time taken:  0.21609469200484455  (accumulated wall time)
 #          22709.9884557724 (recorded time)
+# -----------------------------------------------------------------------
+# Epoch: 100000 | Energy: 8.8369 +/- 0.7622 | CI: 9.7266 | Walltime: 2.02e-01 (s) | window loss difference: 0.001835 | avg overlap : 0.000000
+# Done
+
+# Time taken:  0.2018526429310441  (accumulated wall time)
+#          21980.707648038864 (recorded time) [approx. 6.1 h]
+
 
 t0 = time.time()
 os.system("python3 run.py -V 5 -S 0.3 -N 5 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
 print(time.time() - t0)
 # reduced number of parameters is:  330
+# -----------------------------------------------------------------------
 # Epoch: 100000 | Energy: 14.0678 + /- 1.1999 | CI: 15.4063 | Walltime: 4.41e-01 (s) | window loss difference: 0.005070 | avg overlap: 0.000000
 
 # Time taken:  0.4411039029946551  (accumulated wall time)
 #           90712.18101072311 (recorded time)
+# -----------------------------------------------------------------------
+

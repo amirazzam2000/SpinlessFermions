@@ -6,6 +6,8 @@ from typing import Callable, Tuple
 
 from Layers import EquivariantLayer, SlaterMultiDet, LogEnvelope, MatrixToSLogDeterminant
 
+import time 
+
 class vLogHarmonicNet(nn.Module):
 
     def __init__(self, num_input: int, num_hidden: int, num_layers: int, num_dets: int, func: nn.Module, pretrain: bool):
@@ -70,8 +72,18 @@ class vLogHarmonicNet(nn.Module):
                                         num_dets=self.num_dets)
 
         self.slog_slater_det = MatrixToSLogDeterminant(num_particles=self.num_input)
+        self.reset_time_records()
 
+    def reset_time_records(self):
+        self.time_records = {"det_time": [], "net_time": []}
 
+    def get_time_records(self):
+        return self.time_records
+    
+    def pop_time_records(self):
+        aux = self.get_time_records()
+        self.reset_time_records()
+        return aux 
 
     def forward(self, x0: Tensor):
         """The call method of the class (is the equivalent of evaluating the network's current output)
@@ -84,17 +96,25 @@ class vLogHarmonicNet(nn.Module):
                     If `Models.MultiDetLogHarmonicNet.pretrain` is False, the Tuple contains the global sign and global logabs values of Generalised Slater Matrices     
         :rtype out: `Tuple[torch.Tensor, torch.Tensor]`
         """
-
+        t = time.time()
         h=x0.unsqueeze(-1)                #add feature dim (1d-systems only)
         x = self.func(self.layers[0](h))  #equivariant layers here... 
         for l in self.layers[1:-1]:       #(with residual connections)
             x = self.func(l(x)) + x
         matrices = self.layers[-1](x)     #slater multi-det layer
         log_envs = self.log_envelope(x0)  #log-envelopes 
+        # print("time before determinant = ", time.time() - t)
+        self.time_records["net_time"].append(time.time() - t)
 
         if(self.pretrain):
             generalised_matrices = matrices * torch.exp(log_envs)
             return generalised_matrices
         else:
+            t = time.time()
             sign, logabsdet = self.slog_slater_det(matrices, log_envs)
+            # print("determinant Time = ", time.time() - t)
+            # print()
+            self.time_records["det_time"].append(time.time() - t)
             return sign, logabsdet
+
+
