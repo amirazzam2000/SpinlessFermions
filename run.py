@@ -243,7 +243,7 @@ num_iterations = 0
 delta = 1e-2
 error_tolerance = 0
 
-window_size = 500
+window_size = 100
 mean_energy_list = []
 var_energy_list = []
 sliding_window_loss = 0
@@ -313,7 +313,7 @@ for epoch in range(start, epochs+1):
     stats['walltime'] = end-start
 
     the_current_loss = loss.item()
-    mean_energy_list.append(energy_mean)
+    mean_energy_list.append(energy_mean.item())
     var_energy_list.append(np.sqrt(energy_var.item() / nwalkers))
 
     loss_diff = np.abs(the_current_loss - the_last_loss)
