@@ -53,7 +53,7 @@ add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-W", "--num_walkers",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
-parser.add_argument("-DIR", "--dir",       type=str,   default=4096,     help="The name of the output directory")
+parser.add_argument("-DIR", "--dir",       type=int,   default=4096,     help="The name of the output directory")
 
 args = parser.parse_args()
 
