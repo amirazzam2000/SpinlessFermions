@@ -51,9 +51,9 @@ parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Num
 add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
 add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
-parser.add_argument("-W", "--num_walkers",       type=str,   default=None,     help="The path of the output model")
+parser.add_argument("-W", "--num_walkers",       type=int,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
-parser.add_argument("-DIR", "--dir",       type=int,   default=4096,     help="The name of the output directory")
+parser.add_argument("-DIR", "--dir",       type=str,   default=4096,     help="The name of the output directory")
 
 args = parser.parse_args()
 
