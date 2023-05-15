@@ -48,6 +48,7 @@ parser.add_argument("-S", "--sigma0",       type=float, default=0.5,   help="Int
 parser.add_argument("--preepochs",          type=int,   default=10000, help="Number of pre-epochs for the pretraining phase")
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
+parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
 add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
 add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
@@ -69,7 +70,7 @@ pretrain = True   #pretraining output shape?
 
 directory = args.dir 
 
-nwalkers=4096
+nwalkers = args.num_walkers
 n_sweeps=10 #n_discard
 std=1.#0.02#1.
 target_acceptance=0.5
