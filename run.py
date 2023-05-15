@@ -51,8 +51,9 @@ parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Num
 add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
 add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
+parser.add_argument("-W", "--num_walkers",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
-parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
+parser.add_argument("-DIR", "--dir",       type=str,   default=4096,     help="The name of the output directory")
 
 args = parser.parse_args()
 
@@ -63,13 +64,13 @@ num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
 freeze = args.freeze    
+nwalkers = args.num_walkers
 early_stopping_active = not args.no_early_stopping
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
 directory = args.dir 
 
-nwalkers=4096
 n_sweeps=10 #n_discard
 std=1.#0.02#1.
 target_acceptance=0.5
