@@ -199,24 +199,24 @@ print("\n")
 net.pretrain = False #check it's false
 optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 
-model_path = "results/energy/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
-                (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
+model_path = "results/energy/checkpoints/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
+    (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
                  optim.__class__.__name__, False, device, dtype, freeze) if model_name is None else model_name
-filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
-                (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0, \
-                 optim.__class__.__name__, False, device, dtype, freeze, lr) if directory is None else directory.rstrip('\\') + "/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
-                (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+filename = "results/energy/data/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+    (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+                 optim.__class__.__name__, False, device, dtype, freeze, lr) if directory is None else directory.rstrip('\\') + \
+                    "/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+    (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
                  optim.__class__.__name__, False, device, dtype, freeze, lr)
 
 
-time_filename = "results/energy/timing_data/wait_data_UL%03i_A%02i.csv" % (
-    upper_lim, nfermions) if directory is None else directory.rstrip('\\') + "/wait_data_UL%03i_A%02i.csv" % (
-    upper_lim, nfermions)
+time_filename = "results/energy/timing_data/A%02i_MH%03i_wait_data.csv" % (
+    nfermions, upper_lim) if directory is None else directory.rstrip('\\') + "/A%02i_MH%03i_wait_data.csv" % (
+    nfermions, upper_lim)
 
 print("saving model at:", model_path)
 
 writer_t = load_dataframe(time_filename)
-
 writer = load_dataframe(filename)
 
 if load_model_name is not None:
@@ -439,24 +439,7 @@ for epoch in range(start, epochs+1):
 
 t1 = time.time() - t0
 
-# time tests ----------------------------------------------------------------
-# time_records = net.get_time_records()
-
 writer.write_to_file(filename)
-# filename = "results/energy/data/timing_data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
-#     (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-#      optim.__class__.__name__, False, device, dtype, freeze, lr)
-
-
-# writer_t = load_dataframe(filename)
-
-# import pandas as pd 
-# print(pd.DataFrame.from_dict(time_records))
-# writer_t(time_records)
-# writer_t.write_to_file(filename)
-# -------------------------------------------------------------
-
-# pd.DataFrame.from_dict(wait_data).to_csv("results/energy/data/wait_data.csv")
 
 print("\nDone")
 print("\nTime taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
