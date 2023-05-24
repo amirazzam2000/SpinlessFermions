@@ -1,3 +1,4 @@
+import pandas as pd
 import torch
 from torch import nn, Tensor
 import numpy as np
@@ -258,29 +259,73 @@ total_time = 0
 print("early stopping = ", early_stopping_active)
 print()
 
+time_stats = {}
+time_stats['MH_time'] = []
+
+weighted_ratio = 0
+old_logabs = 1
+wait_epochs= 0
+waited_epochs = 0
+
+wait_data = {}
+wait_data['waited_epochs'] = []
+wait_data['ratio'] = []
+wait_data['wait_threshold'] = []
 
 #Energy Minimisation
 t0 = time.time()
 for epoch in range(start, epochs+1):
+    waited_epochs += 1
     stats={}
 
     start=sync_time()
 
-    t_MH = time.time()
-    x, _ = sampler(n_sweeps)
-    stats['MH_time'] = time.time() - t_MH
-    # print("metropolis hasting time = ", time.time() - t_MH)
-    # print()
+    if waited_epochs > wait_epochs:
+        t_MH = time.time()
+        x, _ = sampler(n_sweeps)
+        time_stats['MH_time'] = time.time() - t_MH
 
-    elocal = calc_elocal(x)
+        sign, logabs = net(x)
+     
+        print()
+        print("updating samples: steps taken =", waited_epochs, "threshold=", wait_epochs)
+        print()
+
+        old_logabs = logabs
+        waited_epochs = 0
+
+
+    else: 
+        sign, logabs = net(x)
+
+    ratio_no_mean = torch.exp(2 * (logabs - old_logabs))
+    weighted_ratio = torch.mean(ratio_no_mean).item()
+    wait_epochs = 100 - 90 * np.abs(1 - weighted_ratio)
+    wait_epochs = wait_epochs if wait_epochs > 0 else 0
+
+    elocal = calc_elocal(x) 
     elocal = clip(elocal, clip_factor=5)
 
-    _, logabs = net(x)
+    # psi = sign*torch.exp(logabs)
+
+
+    if epoch%1 == 0:
+        wait_data['waited_epochs'].append(waited_epochs)
+        wait_data['ratio'].append(weighted_ratio)
+        wait_data['wait_threshold'].append(wait_epochs)
+    
+    
+
+
 
     loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
     
     with torch.no_grad():
-        energy_var, energy_mean = torch.var_mean(elocal, unbiased=True) # sqrt(var/ num_walkers) 
+        r_mean = torch.mean(ratio_no_mean)  
+        energy_mean = torch.mean(elocal * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
+
+        energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
+        energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
 
     loss=torch.mean(loss_elocal)  
      
@@ -294,12 +339,15 @@ for epoch in range(start, epochs+1):
     optim.step()
     stats['opt_time'] = time.time() - t_MH
 
+    end = sync_time()
+
     net_time = net.pop_time_records()
 
+    ## log temporal values
+    for key, value in time_stats.items():
+        stats[key] = value
     for key, value in net_time.items():
         stats[key] = np.average(value)
-
-    end = sync_time()
 
     total_time = end - start
     stats['epoch'] = [epoch] #must pass index
@@ -338,8 +386,8 @@ for epoch in range(start, epochs+1):
                     model_path)
         writer.write_to_file(filename)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | window loss difference: %6.6f | avg overlap : %6.6f    \r" %
-                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), gs_CI, end-start, avg_loss_diff, avg_coverage))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | weight ratio: %6.6f | waited epochs: %6i \r" %
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), gs_CI, end-start, wait_epochs, weighted_ratio, waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
@@ -354,7 +402,8 @@ for epoch in range(start, epochs+1):
 
         print()
         print()
-        print("mean energy = ", mean_loss, "| average energy = ", sliding_window_loss , "| data slope = ", a , "| slop diff = ", slop_diff)
+        print("mean energy = ", mean_loss, "| average energy = ", sliding_window_loss,
+              "| data slope = ", a)
         print("-"*10)
 
         mean_energy_list = []
@@ -408,6 +457,8 @@ writer.write_to_file(filename)
 # writer_t(time_records)
 # writer_t.write_to_file(filename)
 # -------------------------------------------------------------
+
+pd.DataFrame.from_dict(wait_data).to_csv("results/energy/data/wait_data.csv")
 
 t1 = time.time() - t0
 print("\nDone")
