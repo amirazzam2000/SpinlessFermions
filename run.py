@@ -41,6 +41,8 @@ def add_bool_arg(parser, name, short, help="", default=False):
 
 
 parser.add_argument("-N", "--num_fermions", type=int,   default=2,     help="Number of fermions in physical system")
+parser.add_argument("-UL", "--upper_lim", type=int,   default=100,     help="the upper limit to the weighted MH")
+parser.add_argument("-LL", "--lower_lim", type=int,   default=10,     help="the upper limit to the weighted MH")
 parser.add_argument("-H", "--num_hidden",   type=int,   default=64,    help="Number of hidden neurons per layer")
 parser.add_argument("-L", "--num_layers",   type=int,   default=2,     help="Number of layers within the network")
 parser.add_argument("-D", "--num_dets",     type=int,   default=1,     help="Number of determinants within the network's final layer")
@@ -59,6 +61,8 @@ parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="T
 args = parser.parse_args()
 
 nfermions = args.num_fermions #number of input nodes
+upper_lim = args.upper_lim #upper limit for MH
+lower_lim = args.lower_lim #lower limit for MH
 num_hidden = args.num_hidden  #number of hidden nodes per layer
 num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
@@ -205,14 +209,13 @@ filename = "results/energy/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%
                  optim.__class__.__name__, False, device, dtype, freeze, lr)
 
 
-
-time_filename = "results/energy/timing_data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
-    (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-     optim.__class__.__name__, False, device, dtype, freeze, lr)
+time_filename = "results/energy/timing_data/wait_data_UL%03i_A%02i.csv" % (
+    upper_lim, nfermions) if directory is None else directory.rstrip('\\') + "/wait_data_UL%03i_A%02i.csv" % (
+    upper_lim, nfermions)
 
 print("saving model at:", model_path)
 
-writer_t = load_dataframe(filename)
+writer_t = load_dataframe(time_filename)
 
 writer = load_dataframe(filename)
 
@@ -267,15 +270,15 @@ old_logabs = 1
 wait_epochs= 0
 waited_epochs = 0
 
-wait_data = {}
-wait_data['waited_epochs'] = []
-wait_data['ratio'] = []
-wait_data['wait_threshold'] = []
+# wait_data['waited_epochs'] = []
+# wait_data['ratio'] = []
+# wait_data['wait_threshold'] = []
 
 #Energy Minimisation
 t0 = time.time()
 for epoch in range(start, epochs+1):
     waited_epochs += 1
+    wait_data = {}
     stats={}
 
     start=sync_time()
@@ -300,23 +303,15 @@ for epoch in range(start, epochs+1):
 
     ratio_no_mean = torch.exp(2 * (logabs - old_logabs))
     weighted_ratio = torch.mean(ratio_no_mean).item()
-    wait_epochs = 100 - 90 * np.abs(1 - weighted_ratio)
+    wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
     wait_epochs = wait_epochs if wait_epochs > 0 else 0
 
     elocal = calc_elocal(x) 
     elocal = clip(elocal, clip_factor=5)
 
-    # psi = sign*torch.exp(logabs)
-
-
-    if epoch%1 == 0:
-        wait_data['waited_epochs'].append(waited_epochs)
-        wait_data['ratio'].append(weighted_ratio)
-        wait_data['wait_threshold'].append(wait_epochs)
-    
-    
-
-
+    wait_data['waited_epochs'] = [waited_epochs]
+    wait_data['ratio'] = weighted_ratio
+    wait_data['wait_threshold'] = wait_epochs
 
     loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
     
@@ -372,6 +367,7 @@ for epoch in range(start, epochs+1):
     stats['overlap'] = avg_coverage
     
     writer(stats)
+    writer_t(wait_data)
 
     if(epoch % em_save_every_ith == 0):
         torch.save({'epoch':epoch,
@@ -385,6 +381,7 @@ for epoch in range(start, epochs+1):
                     'sigma':sampler.sigma},
                     model_path)
         writer.write_to_file(filename)
+        writer_t.write_to_file(time_filename)
 
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | weight ratio: %6.6f | waited epochs: %6i \r" %
                      (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), gs_CI, end-start, wait_epochs, weighted_ratio, waited_epochs))
@@ -440,6 +437,7 @@ for epoch in range(start, epochs+1):
         old_slope = a 
     the_last_loss = the_current_loss
 
+t1 = time.time() - t0
 
 # time tests ----------------------------------------------------------------
 # time_records = net.get_time_records()
@@ -458,8 +456,7 @@ writer.write_to_file(filename)
 # writer_t.write_to_file(filename)
 # -------------------------------------------------------------
 
-pd.DataFrame.from_dict(wait_data).to_csv("results/energy/data/wait_data.csv")
+# pd.DataFrame.from_dict(wait_data).to_csv("results/energy/data/wait_data.csv")
 
-t1 = time.time() - t0
 print("\nDone")
 print("\nTime taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
