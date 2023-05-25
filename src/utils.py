@@ -4,8 +4,9 @@ import time
 from tqdm import tqdm
 from typing import Callable, Tuple
 import numpy as np
-import os, warnings
+import os, warnings, sys
 from Writers import WriteToFile
+from Layers import EquivariantLayer
 
 
 def unsqueeze_to_size(m: Tensor, s: int) -> Tensor:
@@ -129,9 +130,18 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
             net1_dict.update(pretrained_dict)
             net.load_state_dict(net1_dict)
             if freeze:
-                for n, p in net.named_parameters():
-                    if state_net[n].shape == p.shape and (state_net[n] == p).all().item():
-                        p.requires_grad = False
+
+                for i, layer in enumerate(net.layers):
+                    if isinstance(layer, EquivariantLayer):
+                        for n, p in layer.named_parameters():
+                            layer_name = "layers."+str(i)+"."+ n
+                            if state_net[layer_name].shape == p.shape and (state_net[layer_name] == p).all().item():
+                                p.requires_grad = False
+
+                # for n, p in net.named_parameters():
+                #     if state_net[n].shape == p.shape and (state_net[n] == p).all().item():
+                #         p.requires_grad = False
+
             for n, p in net.named_parameters():
                 print(n, "grad: ", p.requires_grad)
         else:

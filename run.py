@@ -10,7 +10,7 @@ torch.set_printoptions(4)
 torch.backends.cudnn.benchmark=True
 torch.set_default_dtype(torch.float32)
 
-device = torch.device('cpu')# if not torch.cuda.is_available() else torch.device('cuda')
+device = torch.device('cpu') if not torch.cuda.is_available() else torch.device('cuda')
 dtype = str(torch.get_default_dtype()).split('.')[-1]
 
 sys.path.append("./src/")
@@ -55,6 +55,7 @@ parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     h
 add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
 add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
+parser.add_argument("-W", "--num_walkers",       type=int,   default=4096, help="Number of walkers for the metrapolis hasting")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
 
@@ -69,6 +70,7 @@ num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
 freeze = args.freeze    
+nwalkers = args.num_walkers
 early_stopping_active = not args.no_early_stopping
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
@@ -248,7 +250,7 @@ num_iterations = 0
 delta = 1e-2
 error_tolerance = 0
 
-window_size = 500
+window_size = 100
 mean_energy_list = []
 var_energy_list = []
 sliding_window_loss = 0
@@ -357,7 +359,7 @@ for epoch in range(start, epochs+1):
     stats['walltime'] = end-start
 
     the_current_loss = loss.item()
-    mean_energy_list.append(energy_mean)
+    mean_energy_list.append(energy_mean.item())
     var_energy_list.append(np.sqrt(energy_var.item() / nwalkers))
 
     loss_diff = np.abs(the_current_loss - the_last_loss)
