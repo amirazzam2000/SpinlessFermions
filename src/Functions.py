@@ -8,8 +8,6 @@ from typing import Any, Tuple
 from Functions_utils import get_log_gamma, get_log_rho
 from Functions_utils import get_off_diagonal_elements, get_Xi_diag
 
-from utils import unsqueeze_to_size
-
 #We use the old-style of torch.autograd.Function 
 
 class GeneralisedLogSumExpEnvLogDomainStable(Function):
