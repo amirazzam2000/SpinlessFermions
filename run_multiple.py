@@ -1,6 +1,6 @@
 import sys, os
 
-directory = "results/energy/data/Early_Stopping_Testing"
+directory = "results/energy/data/Early_Stopping_Testing_2"
 
 if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
@@ -12,27 +12,27 @@ if not os.path.exists("./out/NoES"):
     os.system("mkdir {}".format("./out/NoES"))
 
 # no pre no freezing 
-os.system("python3 run.py -V 5 -S 0.3 -DIR {} -UL 1 -LL 1 --epochs 100000 -NoES > out/NoES/no_trans_no_freezing_no_MH.txt".format(directory))
+os.system("python3 run.py -V 5 -S 0.3 -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 -NoES -T 'NoES_' > out/NoES/no_trans_no_freezing_no_MH.txt".format(directory))
 
 model_name = "partial_data/model-OG"
-os.system("python3 run.py -V 0 -S 0.5 -M {} -DIR {} -UL 1 -LL 1 --epochs 100000 -NoES > out/NoES/dumb.txt".format(model_name, directory))
+os.system("python3 run.py -V 0 -S 0.5 -M {} -DIR {} -UL 1 -LL 1 --epochs 100000 -NoES -T 'NoES_' > out/NoES/dumb.txt".format(model_name, directory))
 
 # transfer learning (no freezing)
-os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -NoES > out/NoES/w_trans_no_freezing_no_MH.txt".format(model_name, directory))
+os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -NoES -T 'NoES_' > out/NoES/w_trans_no_freezing_no_MH.txt".format(model_name, directory))
 
 # transfer learning (freezing)
-os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -F -NoES > out/NoES/w_trans_w_freezing_no_MH.txt".format(model_name, directory))
+os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -F -NoES -T 'NoES_' > out/NoES/w_trans_w_freezing_no_MH.txt".format(model_name, directory))
 
 # weighted MH [no trans] (no freezing)
-os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 -NoES > out/NoES/no_trans_no_freezing_w_MH.txt".format(model_name, directory))
+os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 -NoES -T 'NoES_' > out/NoES/no_trans_no_freezing_w_MH.txt".format(model_name, directory))
 
 # with transfer learning :
 
 # weighted MH (no freezing)
-os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -NoES > out/NoES/w_trans_no_freezing_w_MH.txt".format(model_name, directory))
+os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -NoES -T 'NoES_' > out/NoES/w_trans_no_freezing_w_MH.txt".format(model_name, directory))
 
 # weighted MH (freezing)
-os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -F -NoES > out/NoES/w_trans_w_freezing_w_MH.txt".format(model_name, directory))
+os.system("python3 run.py -V 5 -S 0.3  -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -F -NoES -T 'NoES_' > out/NoES/w_trans_w_freezing_w_MH.txt".format(model_name, directory))
 
 
 

@@ -57,6 +57,7 @@ parser.add_argument("-M", "--model_name",       type=str,   default=None,     he
 parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
+parser.add_argument("-T", "--tag",       type=str,   default=None,     help="tag the name of the file")
 
 args = parser.parse_args()
 
@@ -73,6 +74,8 @@ nwalkers = args.num_walkers
 early_stopping_active = not args.no_early_stopping
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
+
+tag = args.tag
 
 directory = args.dir 
 
@@ -200,13 +203,14 @@ print("\n")
 net.pretrain = False #check it's false
 optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 
-model_path = "results/energy/checkpoints/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
+model_path = "results/energy/checkpoints/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
     (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
                  optim.__class__.__name__, False, device, dtype, freeze) if model_name is None else model_name
-filename = "results/energy/data/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+
+filename = "results/energy/data/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
     (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
                  optim.__class__.__name__, False, device, dtype, freeze, lr) if directory is None else directory.rstrip('\\') + \
-                    "/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+    "/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
     (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
                  optim.__class__.__name__, False, device, dtype, freeze, lr)
 
