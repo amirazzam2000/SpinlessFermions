@@ -211,9 +211,9 @@ filename = "results/energy/data/A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%
                  optim.__class__.__name__, False, device, dtype, freeze, lr)
 
 
-time_filename = "results/energy/timing_data/A%02i_MH%03i_wait_data.csv" % (
-    nfermions, upper_lim) if directory is None else directory.rstrip('\\') + "/A%02i_MH%03i_wait_data.csv" % (
-    nfermions, upper_lim)
+time_filename = "results/energy/timing_data/A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % (
+    nfermions, upper_lim, freeze, (load_model_name is not None)) if directory is None else directory.rstrip('\\') + "/A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % (
+    nfermions, upper_lim, freeze, (load_model_name is not None))
 
 print("saving model at:", model_path)
 
@@ -243,13 +243,14 @@ else :
 net=output_dict['net']
 
 the_last_loss = 100
-patience = 10
+patience = 5
 trigger_times = 0
 num_iterations = 0
-delta = 1e-2
+delta = 1e-3
+var_delta = 3e-3
 error_tolerance = 0
 
-window_size = 100
+window_size = 500
 mean_energy_list = []
 var_energy_list = []
 sliding_window_loss = 0
@@ -291,9 +292,9 @@ for epoch in range(start, epochs+1):
 
         sign, logabs = net(x)
      
-        print()
-        print("updating samples: steps taken =", waited_epochs, "threshold=", wait_epochs)
-        print()
+        # print()
+        # print("updating samples: steps taken =", waited_epochs, "threshold=", wait_epochs)
+        # print()
 
         old_logabs = logabs
         waited_epochs = 0
@@ -390,52 +391,39 @@ for epoch in range(start, epochs+1):
 
     if len(mean_energy_list) > window_size:
         # Compute the weighted average validation loss over sliding window
-        sliding_window_loss = np.sum(mean_energy_list/np.array(var_energy_list)) / np.sum(1/np.array(var_energy_list)) 
+        sliding_window_loss = np.mean(mean_energy_list) / np.sum(1/np.array(var_energy_list)) 
+        avg_var = np.mean(var_energy_list)
 
-        mean_loss = np.mean(mean_energy_list)
-
-        a, _ = np.polyfit(range(len(mean_energy_list)), mean_energy_list, 1)
-
-        slop_diff = np.abs(old_slope - a)
-
-        print()
-        print()
-        print("mean energy = ", mean_loss, "| average energy = ", sliding_window_loss,
-              "| data slope = ", a)
-        print("-"*10)
+        slope, _ = np.polyfit(range(len(mean_energy_list)), mean_energy_list, 1)
 
         mean_energy_list = []
         var_energy_list = []
 
+
         avg_loss_diff = np.abs(sliding_window_loss - last_window_loss)
+        slop_diff = np.abs(old_slope - slope)
 
-
-        if avg_loss_diff < delta:
-            if a < 3e-7 and old_slope < 3e-7 and slop_diff < 3e-7:
-                # print('\nEarly stopping cuz slope!')
-                # if early_stopping_active:
-                #     break
-
-                print("\n triggered.")
-
+        if slope < 3e-6 and old_slope < 3e-6 and slop_diff < 3e-6:
+            if avg_loss_diff < delta and avg_var < var_delta:
                 trigger_times += 1
+                
                 if trigger_times == 1:
                     error_tolerance = 0
 
                 if trigger_times >= patience:
-                    print('\nEarly stopping!')
                     if early_stopping_active:
+                        print('\nEarly stopping!')
                         break
 
         else:
             error_tolerance += 1
             if error_tolerance >= 2:
-                print("\n reset trigger")
                 trigger_times = 0
                 error_tolerance = 0
 
         last_window_loss = sliding_window_loss
-        old_slope = a 
+        old_slope = slope 
+
     the_last_loss = the_current_loss
 
 t1 = time.time() - t0
