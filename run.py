@@ -203,16 +203,16 @@ print("\n")
 net.pretrain = False #check it's false
 optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 
-model_path = "results/energy/checkpoints/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_chkp.pt" % \
+model_path = "results/energy/checkpoints/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_trans_%s_chkp.pt" % \
     (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-                 optim.__class__.__name__, False, device, dtype, freeze) if model_name is None else model_name
+     optim.__class__.__name__, False, device, dtype, freeze, (load_model_name is not None)) if model_name is None else model_name
 
-filename = "results/energy/data/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+filename = "results/energy/data/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e_trans_%s.csv" % \
     (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-                 optim.__class__.__name__, False, device, dtype, freeze, lr) if directory is None else directory.rstrip('\\') + \
-    "/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e.csv" % \
+     optim.__class__.__name__, False, device, dtype, freeze, lr, (load_model_name is not None)) if directory is None else directory.rstrip('\\') + \
+    "/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e_trans_%s.csv" % \
     (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
-                 optim.__class__.__name__, False, device, dtype, freeze, lr)
+     optim.__class__.__name__, False, device, dtype, freeze, lr, (load_model_name is not None))
 
 
 time_filename = "results/energy/timing_data/A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % (
@@ -407,7 +407,7 @@ for epoch in range(start, epochs+1):
         avg_loss_diff = np.abs(sliding_window_loss - last_window_loss)
         slop_diff = np.abs(old_slope - slope)
 
-        if slope < 3e-6 and old_slope < 3e-6 and slop_diff < 3e-6:
+        if slope < 3e-7 and old_slope < 3e-7 and slop_diff < 3e-6:
             if avg_loss_diff < delta and avg_var < var_delta:
                 trigger_times += 1
                 
