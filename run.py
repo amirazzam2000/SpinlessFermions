@@ -51,11 +51,10 @@ parser.add_argument("-S", "--sigma0",       type=float, default=0.5,   help="Int
 parser.add_argument("--preepochs",          type=int,   default=10000, help="Number of pre-epochs for the pretraining phase")
 parser.add_argument("--epochs",             type=int,   default=10000, help="Number of epochs for the energy minimisation phase")
 parser.add_argument("-C", "--chunks",       type=int,   default=1,     help="Number of chunks for vectorized operations")
-parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
 add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural network when it's loaded.")
 add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
-parser.add_argument("-W", "--num_walkers",       type=int,   default=4096, help="Number of walkers for the metrapolis hasting")
+parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
 
@@ -442,6 +441,7 @@ for epoch in range(start, epochs+1):
 t1 = time.time() - t0
 
 writer.write_to_file(filename)
+writer_t.write_to_file(time_filename)
 
 print("\nDone")
 print("\nTime taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
