@@ -57,7 +57,7 @@ parser.add_argument("-M", "--model_name",       type=str,   default=None,     he
 parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
-parser.add_argument("-T", "--tag",       type=str,   default=None,     help="tag the name of the file")
+parser.add_argument("-T", "--tag",       type=str,   default="",     help="tag the name of the file")
 
 args = parser.parse_args()
 
