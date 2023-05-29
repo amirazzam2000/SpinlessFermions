@@ -1,8 +1,8 @@
 import sys, os
 
-directory = "results/energy/data/No_Early_Stopping_Testing_complete"
+directory = "results/energy/data/Early_Stopping_Testing_complete"
 
-out_dir = "./out/NoES_complete"
+out_dir = "./out/ES_complete"
 
 if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
