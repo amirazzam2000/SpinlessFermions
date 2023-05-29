@@ -247,14 +247,14 @@ else :
 net=output_dict['net']
 
 the_last_loss = 100
-patience = 5
+patience = 4
 trigger_times = 0
 num_iterations = 0
 delta = 1e-3
 var_delta = 3e-3
 error_tolerance = 0
 
-window_size = 500
+window_size = 1000
 mean_energy_list = []
 var_energy_list = []
 sliding_window_loss = 0
