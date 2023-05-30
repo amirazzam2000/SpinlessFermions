@@ -1,101 +1,126 @@
-# import sys
-# import os
-
-# model_name = "./partial_data/model-A3-V5"
-# load_name = "./partial_data/model-A3"
-# directory= "./results/energy/data/A3_no_pre"
-# os.system("python3 run.py -V 5 -S 0.3 -N 3 --epochs 100000 --preepochs 0 -DIR {}".format(directory))
-
-# directory = "./results/energy/data/A3_pre"
-
-# os.system("python3 run.py -V 5 -S 0.3 -N 2 -LM {} -M {} --epochs 100000".format(load_name, model_name))
-
-# os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} --epochs 100000 --preepochs 0 -F 1 -DIR {}".format(model_name, directory))
-
 import sys
 import os
-import time
 
-directory = "./results/energy/data/A3_new_stopping6-experimental"
-model_name = "./partial_data/model-A3-V5-es6.new"
+directory_base = "results/energy/data/ES_complete_slow_GPU"
 
-if os.path.exists(model_name):
-    os.remove(model_name)
+out_dir = "./out/ES_complete_slow_GPU"
 
-os.system("python3 run.py -V 5 -S 0.3 -N 2 -M {} -DIR {} --epochs 100000".format(model_name, directory))
-# os.system("python3 run.py -V 5 -S 0.3 -N 3 -M {} -DIR {} --epochs 100000 --preepochs 0".format(model_name, directory))
+model_name_tag = "-ES-slow-GPU"
 
-# t0 = time.time()
-# os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} -DIR {} --epochs 100000 --preepochs 0".format(model_name, directory))
-# print(time.time() - t0)
+if not os.path.exists(directory_base):
+    os.system("mkdir {}".format(directory_base))
 
-# Time taken:  0.1581332510104403
+if not os.path.exists("./out"):
+    os.system("mkdir {}".format("./out"))
 
-# t0 = time.time()
+if not os.path.exists(out_dir):
+    os.system("mkdir {}".format(out_dir))
+
+# no WMH no trans no freezing
+
+directory = directory_base + "/no_WMH_no_trans_no_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3  -DIR {} -UL 1 -LL 1 --epochs 100000 -T 'ES_' > {}/no_trans_no_freezing_no_MH.txt".format(directory, out_dir))
+
+# no WMH no trans w freezing
+
+directory = directory_base + "/no_WMH_no_trans_w_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A2-for-freezing" + model_name_tag
+os.system("python3 run.py -N 2 -V 5 -S 0.3  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000 -T 'ES_' > {}/dumb.txt".format(model_name, directory, out_dir))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -F -T 'ES_' > {}/no_trans_w_freezing_no_MH.txt".format(model_name, directory, out_dir))
+
+# no WMH w trans no freezing
+
+directory = directory_base + "/no_WMH_w_trans_no_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A4-for-trans" + model_name_tag
+os.system("python3 run.py -N 4 -V 0 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000 -T 'ES_' >> {}/dumb.txt".format(model_name, directory, out_dir))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -T 'ES_' > {}/w_trans_no_freezing_no_MH.txt".format(model_name, directory, out_dir))
+
+# w WMH no trans no freezing
+
+directory = directory_base + "/w_WMH_no_trans_no_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3  -DIR {} -UL 100 -LL 10 --epochs 100000 -T 'ES_' > {}/no_trans_no_freezing_w_MH.txt".format(directory, out_dir))
+
+# w WMH no trans w freezing
+
+directory = directory_base + "/w_WMH_no_trans_w_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A2-for-freezing-w-MH" + model_name_tag
+os.system("python3 run.py -N 2 -V 5 -S 0.3  -M {} -DIR {} -UL 100 -LL 10 --epochs 100000 -T 'ES_' >> {}/dumb.txt".format(model_name, directory, out_dir))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -F -T 'ES_' > {}/no_trans_w_freezing_w_MH.txt".format(model_name, directory, out_dir))
+
+
+# w WMH w trans no freezing
+
+directory = directory_base + "/w_WMH_w_trans_no_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A4-for-trans" + model_name_tag
+os.system("python3 run.py -N 4 -V 0 -S 0.5  -M {} -DIR {} -UL 100 -LL 10 --epochs 100000 -T 'ES_' >> {}/dumb.txt".format(model_name, directory, out_dir))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -T 'ES_' > {}/w_trans_no_freezing_w_MH.txt".format(model_name, directory, out_dir))
+
+
+# w WMH w trans w freezing
+
+directory = directory_base + "/w_WMH_w_trans_w_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A2-for-freezing-for-trans-w-MH" + model_name_tag
+os.system("python3 run.py -N 2 -V 0 -S 0.5  -M {} -DIR {} -UL 100 -LL 10 --epochs 100000 -T 'ES_' >> {}/dumb.txt".format(model_name, directory, out_dir))
+
+model_name_f = "partial_data/model-A2-after-freezing-for-trans-w-MH"
+os.system("python3 run.py -N 4 -V 0 -S 0.5   -M {} -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -F -T 'ES_' > {}/w_trans_w_freezing_w_MH_part1.txt".format(model_name_f, model_name, directory, out_dir))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -T 'ES_' > {}/w_trans_w_freezing_w_MH_part2.txt".format(model_name_f, directory, out_dir))
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000 --preepochs 0 -F -T 'ES_' >> {}/w_trans_w_freezing_w_MH_part2.txt".format(model_name_f, directory, out_dir))
+
+
+# no WMH w trans w freezing
+
+directory = directory_base + "/no_WMH_w_trans_w_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A2-for-freezing-for-trans-no-MH" + model_name_tag
+os.system("python3 run.py -N 2 -V 0 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000 -T 'ES_' >> {}/dumb.txt".format(model_name, directory, out_dir))
+
+model_name_f = "partial_data/model-A2-after-freezing-for-trans-no-MH"
+os.system("python3 run.py -N 4 -V 0 -S 0.5   -M {} -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -F -T 'ES_' > {}/w_trans_w_freezing_no_MH_part1.txt".format(model_name_f, model_name, directory, out_dir))
+
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -T 'ES_' > {}/w_trans_w_freezing_no_MH_part2.txt".format(model_name_f, directory, out_dir))
+os.system("python3 run.py -N 4 -V 5 -S 0.3   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000 --preepochs 0 -F -T 'ES_' >> {}/w_trans_w_freezing_no_MH_part2.txt".format(model_name_f, directory, out_dir))
+
+
+# os.system("python3 run.py -V 5 -S 0.3 -LM {} -M {} -DIR {} --epochs 100000 --preepochs 0".format(model_name, model_name, directory))
+
 # os.system("python3 run.py -V 5 -S 0.3 -N 3 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
-# print(time.time() - t0)
 
-# Time taken:  0.15845419198740274
+# os.system("python3 run.py -V 5 -S 0.3 -N 8 -W 8192 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F -NoES".format(model_name, directory))
 
-directory = "./results/energy/data/higher_N_no_ES"
+#################################### Testing Weighted MH ########################################################
+# os.system("python3 run.py -V 5 -S 0.3 -DIR {} --epochs 50000 --preepochs 0 -NoES -UL 1 -LL 1".format(directory))
 
-t0 = time.time()
-os.system("python3 run.py -V 5 -S 0.3 -N 4 -LM {} -DIR {} --epochs 100000 --preepochs 0 -NoES".format(model_name, directory))
-print(time.time() - t0)
-# Number of parameters:     8712
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 8.8474 +/- 0.4033 | CI: 9.7266 | Walltime: 2.14e-01 (s) | window loss difference: 0.000336 | avg overlap : 0.000000
+# os.system("python3 run.py -V 5 -S 0.3 -DIR {} --epochs 50000 --preepochs 0 -NoES -UL 1000 -LL 100".format(directory))
 
-# Time taken:  0.2144414649810642  (accumulated wall time)
-#          22570.24262905121 (recorded time)
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 8.8345 +/- 0.3082 | CI: 9.7266 | Walltime: 2.21e-01 (s) | window loss difference: 0.000226 | avg overlap : 0.000000
+# os.system("python3 run.py -V 5 -S 0.3 -DIR {} --epochs 50000 --preepochs 0 -NoES -UL 500 -LL 100".format(directory))
 
-# Time taken:  0.2207625419832766  (accumulated wall time)
-#          22456.568216323853 (recorded time) [approx. 6.2 h]
-
-t0 = time.time()
-os.system("python3 run.py -V 5 -S 0.3 -N 5 -LM {} -DIR {} --epochs 100000 --preepochs 0 -NoES".format(model_name, directory))
-print(time.time() - t0)
-# Number of parameters:     8778
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 14.0148 + /- 0.9321 | CI: 15.4063 | Walltime: 2.96e-01 (s) | window loss difference: 0.000941 | avg overlap: 0.000000
-
-# Time taken:  0.2957860060269013  (accumulated wall time)
-# 27859.32918214798 (recorded time)
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 14.0104 +/- 0.7596 | CI: 15.4063 | Walltime: 3.42e-01 (s) | window loss difference: 0.000759 | avg overlap : 0.000000
-
-# Time taken:  0.3423790119122714  (accumulated wall time)
-#          33183.660689115524 (recorded time) [approx. 9.2 h]
-
-
-directory = "./results/energy/data/higher_N_ES"
-t0 = time.time()
-os.system("python3 run.py -V 5 -S 0.3 -N 4 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
-print(time.time() - t0)
-# reduced number of parameters is:  264
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 8.8651 +/- 0.8032 | CI: 9.7266 | Walltime: 2.83e-01 (s) | window loss difference: 0.001732 | avg overlap : 0.000000
-
-# Time taken:  0.21609469200484455  (accumulated wall time)
-#          22709.9884557724 (recorded time)
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 8.8369 +/- 0.7622 | CI: 9.7266 | Walltime: 2.02e-01 (s) | window loss difference: 0.001835 | avg overlap : 0.000000
-# Done
-
-# Time taken:  0.2018526429310441  (accumulated wall time)
-#          21980.707648038864 (recorded time) [approx. 6.1 h]
-
-
-t0 = time.time()
-os.system("python3 run.py -V 5 -S 0.3 -N 5 -LM {} -DIR {} --epochs 100000 --preepochs 0 -F".format(model_name, directory))
-print(time.time() - t0)
-# reduced number of parameters is:  330
-# -----------------------------------------------------------------------
-# Epoch: 100000 | Energy: 14.0678 + /- 1.1999 | CI: 15.4063 | Walltime: 4.41e-01 (s) | window loss difference: 0.005070 | avg overlap: 0.000000
-
-# Time taken:  0.4411039029946551  (accumulated wall time)
-#           90712.18101072311 (recorded time)
-# -----------------------------------------------------------------------
-
+# os.system("python3 run.py -V 5 -S 0.3 -DIR {} --epochs 50000 --preepochs 0 -NoES -UL 100 -LL 10".format(directory))
