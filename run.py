@@ -132,11 +132,11 @@ print("Number of parameters: %8i\n" % (count_parameters(net)))
 #####                                           PRE-TRAINING LOOP                                                                         #####
 ###############################################################################################################################################
 
-model_path_pt = "results/pretrain/checkpoints/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_%s_PT_%s_device_%s_dtype_%s_chkp.pt" % \
-                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, \
+model_path_pt = "results/pretrain/checkpoints/%s_A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_%s_PT_%s_device_%s_dtype_%s_chkp.pt" % \
+                 (tag,nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, \
                   optim.__class__.__name__, True, device, dtype)
-filename_pt = "results/pretrain/data/A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_%s_PT_%s_device_%s_dtype_%s.csv" % \
-                 (nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, \
+filename_pt = "results/pretrain/data/%s_A%02i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_%s_PT_%s_device_%s_dtype_%s.csv" % \
+                 (tag, nfermions, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, \
                   optim.__class__.__name__, True, device, dtype)
 
 net.pretrain = True #check pretrain
@@ -203,20 +203,20 @@ print("\n")
 net.pretrain = False #check it's false
 optim = torch.optim.Adam(params=net.parameters(), lr=1e-4) #new optimizer
 
-model_path = "results/energy/checkpoints/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_trans_%s_chkp.pt" % \
-    (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+model_path = "results/energy/checkpoints/%s_A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_trans_%s_chkp.pt" % \
+    (tag, nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
      optim.__class__.__name__, False, device, dtype, freeze, (load_model_name is not None)) if model_name is None else model_name
 
-filename = "results/energy/data/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e_trans_%s.csv" % \
-    (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+filename = "results/energy/data/%s_A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e_trans_%s.csv" % \
+    (tag, nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
      optim.__class__.__name__, False, device, dtype, freeze, lr, (load_model_name is not None)) if directory is None else directory.rstrip('\\') + \
-    "/" + tag + "A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e_trans_%s.csv" % \
-    (nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
+    "/%s_A%02i_MH%03i_H%03i_L%02i_D%02i_%s_W%04i_P%06i_V%4.2e_S%4.2e_%s_PT_%s_device_%s_dtype_%s_freeze_%s_lr_%4.2e_trans_%s.csv" % \
+    (tag, nfermions, upper_lim, num_hidden, num_layers, num_dets, func.__class__.__name__, nwalkers, preepochs, V0, sigma0,
      optim.__class__.__name__, False, device, dtype, freeze, lr, (load_model_name is not None))
 
 
-time_filename = "results/energy/timing_data/A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % (
-    nfermions, upper_lim, freeze, (load_model_name is not None)) if directory is None else directory.rstrip('\\') + "/A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % (
+time_filename = "results/energy/timing_data/%s_A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % ( tag, 
+    nfermions, upper_lim, freeze, (load_model_name is not None)) if directory is None else directory.rstrip('\\') + "/%s_A%02i_MH%03i_freeze_%s_trans_%s_wait_data.csv" % (tag,
     nfermions, upper_lim, freeze, (load_model_name is not None))
 
 print("saving model at:", model_path)
@@ -252,6 +252,7 @@ trigger_times = 0
 num_iterations = 0
 delta = 1e-3
 var_delta = 3e-3
+std_delta = 3e-3
 error_tolerance = 0
 
 window_size = 1000
@@ -397,6 +398,7 @@ for epoch in range(start, epochs+1):
         # Compute the weighted average validation loss over sliding window
         sliding_window_loss = np.mean(mean_energy_list) / np.sum(1/np.array(var_energy_list)) 
         avg_var = np.mean(var_energy_list)
+        ene_std = np.std(mean_energy_list, ddof=1)
 
         slope, _ = np.polyfit(range(len(mean_energy_list)), mean_energy_list, 1)
 
@@ -408,7 +410,7 @@ for epoch in range(start, epochs+1):
         slop_diff = np.abs(old_slope - slope)
 
         if slope < 3e-7 and old_slope < 3e-7 and slop_diff < 3e-6:
-            if avg_loss_diff < delta and avg_var < var_delta:
+            if avg_loss_diff < delta and avg_var < var_delta and ene_std < std_delta:
                 trigger_times += 1
                 
                 if trigger_times == 1:
