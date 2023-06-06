@@ -395,8 +395,11 @@ for epoch in range(start, epochs+1):
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
+        # remove outliers
+        mean_energy_list = mean_energy_list[abs(mean_energy_list - np.mean(mean_energy_list)) < 2 * np.std(mean_energy_list)]
+
         # Compute the weighted average validation loss over sliding window
-        sliding_window_loss = np.mean(mean_energy_list) / np.sum(1/np.array(var_energy_list)) 
+        sliding_window_loss = np.mean(mean_energy_list) # / np.sum(1/np.array(var_energy_list)) 
         avg_var = np.mean(var_energy_list)
         ene_std = np.std(mean_energy_list, ddof=1)
 
