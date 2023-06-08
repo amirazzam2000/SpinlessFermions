@@ -306,6 +306,7 @@ for epoch in range(start, epochs+1):
 
 
     else: 
+        time_stats['MH_time'] = 0
         sign, logabs = net(x)
 
     ratio_no_mean = torch.exp(2 * (logabs - old_logabs))
