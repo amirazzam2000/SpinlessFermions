@@ -7,6 +7,7 @@ from typing import Callable, Tuple
 from Layers import EquivariantLayer, SlaterMultiDet, LogEnvelope, MatrixToSLogDeterminant
 
 import time 
+from utils import sync_time
 
 class vLogHarmonicNet(nn.Module):
 
@@ -96,7 +97,7 @@ class vLogHarmonicNet(nn.Module):
                     If `Models.MultiDetLogHarmonicNet.pretrain` is False, the Tuple contains the global sign and global logabs values of Generalised Slater Matrices     
         :rtype out: `Tuple[torch.Tensor, torch.Tensor]`
         """
-        t = time.time()
+        t = sync_time()   # time.time()
         h=x0.unsqueeze(-1)                #add feature dim (1d-systems only)
         x = self.func(self.layers[0](h))  #equivariant layers here... 
         for l in self.layers[1:-1]:       #(with residual connections)
@@ -104,17 +105,17 @@ class vLogHarmonicNet(nn.Module):
         matrices = self.layers[-1](x)     #slater multi-det layer
         log_envs = self.log_envelope(x0)  #log-envelopes 
         # print("time before determinant = ", time.time() - t)
-        self.time_records["net_time"].append(time.time() - t)
+        self.time_records["net_time"].append(sync_time() - t)
 
         if(self.pretrain):
             generalised_matrices = matrices * torch.exp(log_envs)
             return generalised_matrices
         else:
-            t = time.time()
+            t = sync_time()
             sign, logabsdet = self.slog_slater_det(matrices, log_envs)
             # print("determinant Time = ", time.time() - t)
             # print()
-            self.time_records["det_time"].append(time.time() - t)
+            self.time_records["det_time"].append(sync_time() - t)
             return sign, logabsdet
 
 

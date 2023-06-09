@@ -8,7 +8,7 @@ import os, sys, time
 torch.manual_seed(0)
 torch.set_printoptions(4)
 torch.backends.cudnn.benchmark=True
-torch.set_default_dtype(torch.float32)
+torch.set_default_dtype(torch.float64)
 
 device = torch.device('cpu') if not torch.cuda.is_available() else torch.device('cuda')
 dtype = str(torch.get_default_dtype()).split('.')[-1]
@@ -282,7 +282,7 @@ waited_epochs = 0
 # wait_data['wait_threshold'] = []
 
 #Energy Minimisation
-t0 = time.time()
+t0 = sync_time()
 for epoch in range(start, epochs+1):
     waited_epochs += 1
     wait_data = {}
@@ -291,9 +291,9 @@ for epoch in range(start, epochs+1):
     start=sync_time()
 
     if waited_epochs > wait_epochs:
-        t_MH = time.time()
+        t_MH = sync_time()  # time.time()
         x, _ = sampler(n_sweeps)
-        time_stats['MH_time'] = time.time() - t_MH
+        time_stats['MH_time'] = sync_time() - t_MH
 
         sign, logabs = net(x)
      
@@ -322,6 +322,7 @@ for epoch in range(start, epochs+1):
     wait_data['wait_threshold'] = wait_epochs
 
     loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
+    # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)).detach())
     
     with torch.no_grad():
         r_mean = torch.mean(ratio_no_mean)  
@@ -334,13 +335,13 @@ for epoch in range(start, epochs+1):
      
     
     optim.zero_grad()
-    t_MH = time.time()
+    t_MH = sync_time()
     loss.backward()  #populates leafs with grads
-    stats['back_time'] = time.time() - t_MH
+    stats['back_time'] = sync_time() - t_MH
 
-    t_MH = time.time()
+    t_MH = sync_time()
     optim.step()
-    stats['opt_time'] = time.time() - t_MH
+    stats['opt_time'] = sync_time() - t_MH
 
     end = sync_time()
 
@@ -437,7 +438,7 @@ for epoch in range(start, epochs+1):
 
     the_last_loss = the_current_loss
 
-t1 = time.time() - t0
+t1 = sync_time() - t0
 
 writer.write_to_file(filename)
 writer_t.write_to_file(time_filename)
