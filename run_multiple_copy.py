@@ -2,13 +2,13 @@ import sys
 import os
 
 
-tag = "A4_final_"
+tag = "A4_final_L_"
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
-directory_base = "results/energy/data/ES_A4_F"
-out_dir = "./out/ES_A4_F"
-model_name_tag = "-ES-A4-F"
+directory_base = "results/energy/data/ES_A4_F_L"
+out_dir = "./out/ES_A4_F_L"
+model_name_tag = "-ES-A4-F-L"
 
 
 noes = "" if Enable_ES else "-NoES"
