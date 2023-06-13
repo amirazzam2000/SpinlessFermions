@@ -86,7 +86,7 @@ if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
 
 model_name = "partial_data/model-A4-for-trans" + model_name_tag
-os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 100 -LL 10 --epochs 100000  {} -T  >> {}/dumb.txt".format(
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 100 -LL 10 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
     num_particles, model_name, directory, noes, tag, out_dir))
 
 os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 10 --epochs 100000  --preepochs 0 {} -T {} > {}/w_trans_no_freezing_w_MH.txt".format(
