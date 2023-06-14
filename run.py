@@ -301,7 +301,7 @@ for epoch in range(start, epochs+1):
         # print("updating samples: steps taken =", waited_epochs, "threshold=", wait_epochs)
         # print()
 
-        old_logabs = logabs
+        old_logabs = logabs.clone()
         waited_epochs = 0
 
 
@@ -309,7 +309,7 @@ for epoch in range(start, epochs+1):
         time_stats['MH_time'] = 0
         sign, logabs = net(x)
 
-    ratio_no_mean = torch.exp(2 * (logabs - old_logabs))
+    ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
     weighted_ratio = torch.mean(ratio_no_mean).item()
     wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
     wait_epochs = wait_epochs if wait_epochs > 0 else 0
@@ -321,8 +321,6 @@ for epoch in range(start, epochs+1):
     wait_data['ratio'] = weighted_ratio
     wait_data['wait_threshold'] = wait_epochs
 
-    loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
-    # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)).detach())
     
     with torch.no_grad():
         r_mean = torch.mean(ratio_no_mean)  
@@ -331,7 +329,12 @@ for epoch in range(start, epochs+1):
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
 
-    loss=torch.mean(loss_elocal)  
+    
+    loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
+    # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)))
+
+    # loss=torch.mean(loss_elocal)  
+    loss=torch.mean(loss_elocal * ratio_no_mean)  / r_mean
      
     
     optim.zero_grad()
@@ -445,3 +448,23 @@ writer_t.write_to_file(time_filename)
 
 print("\nDone")
 print("\nTime taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
+
+
+num_samples = 1000
+m_ene = 0
+v_ene = 0
+
+for i in range(num_samples):
+    x, _ = sampler(n_sweeps)
+    sign, logabs = net(x)
+    elocal = calc_elocal(x)
+
+    m = np.mean(elocal)
+    v_ene += np.mean((elocal - m)**2)
+    m_ene += m
+
+m_ene = m_ene/num_samples
+v_ene = v_ene/num_samples
+
+print("mean energy = ", m_ene )
+print("variance in energy = ", v_ene )
