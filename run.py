@@ -458,10 +458,12 @@ for i in range(num_samples):
     x, _ = sampler(n_sweeps)
     sign, logabs = net(x)
     elocal = calc_elocal(x)
+    elocal = clip(elocal, clip_factor=5)
 
-    m = np.mean(elocal)
-    v_ene += np.mean((elocal - m)**2)
-    m_ene += m
+    with torch.no_grad():
+        m = torch.mean(elocal)
+        v_ene += torch.mean((elocal - m)**2)
+        m_ene += m
 
 m_ene = m_ene/num_samples
 v_ene = v_ene/num_samples
