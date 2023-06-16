@@ -309,20 +309,20 @@ for epoch in range(start, epochs+1):
         time_stats['MH_time'] = 0
         sign, logabs = net(x)
 
-    ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
-    weighted_ratio = torch.mean(ratio_no_mean).item()
-    wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
-    wait_epochs = wait_epochs if wait_epochs > 0 else 0
-
     elocal = calc_elocal(x) 
     elocal = clip(elocal, clip_factor=5)
 
-    wait_data['waited_epochs'] = [waited_epochs]
-    wait_data['ratio'] = weighted_ratio
-    wait_data['wait_threshold'] = wait_epochs
+    ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
 
-    
     with torch.no_grad():
+        weighted_ratio = torch.mean(ratio_no_mean).item()
+        wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
+        wait_epochs = wait_epochs if wait_epochs > 0 else 0
+
+        wait_data['waited_epochs'] = [waited_epochs]
+        wait_data['ratio'] = weighted_ratio
+        wait_data['wait_threshold'] = wait_epochs
+       
         r_mean = torch.mean(ratio_no_mean)  
         energy_mean = torch.mean(elocal * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
 
@@ -334,7 +334,8 @@ for epoch in range(start, epochs+1):
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)))
 
     # loss=torch.mean(loss_elocal)  
-    loss=torch.mean(loss_elocal * ratio_no_mean.detach())  / r_mean.detach()
+    ratio_no_mean_test = torch.exp(2 * (logabs - (old_logabs).detach()))
+    loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
      
     
     optim.zero_grad()
