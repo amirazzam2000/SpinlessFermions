@@ -2,13 +2,13 @@ import sys
 import os
 
 
-tag = "ES_A4_New_Loss"
+tag = "ES_A4_Loss2"
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
-directory_base = "results/energy/data/ES_A4_New_Loss"
-out_dir = "./out/ES_A4_New_Loss"
-model_name_tag = "-ES-A4-New-Loss"
+directory_base = "results/energy/data/" + tag
+out_dir = "./out/" + tag
+model_name_tag = "-ES-A4-Loss2"
 
 
 noes = "" if Enable_ES else "-NoES"
