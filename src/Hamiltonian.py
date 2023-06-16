@@ -20,7 +20,7 @@ class HarmonicOscillatorWithInteraction1D(nn.Module):
         xis = [xi.requires_grad_() for xi in x.flatten(start_dim=1).t()]
         xs_flat = torch.stack(xis, dim=1)
 
-        _, ys = self.net(xs_flat.view_as(x))
+        sig, ys = self.net(xs_flat.view_as(x))
 
         ones = torch.ones_like(ys)
 
@@ -31,7 +31,8 @@ class HarmonicOscillatorWithInteraction1D(nn.Module):
                     for xi, dy_dxi in zip(xis, (dy_dxs[..., i] for i in range(len(xis))))
         )
 
-        ek_local_per_walker = -0.5 * (lay_ys + dy_dxs.pow(2).sum(-1)) #move const out of loop?
+        # psi = sig * torch.exp(ys)
+        ek_local_per_walker = -0.5 * (lay_ys + dy_dxs.pow(2).sum(-1)) #move const out of loop? 
         return ek_local_per_walker
 
     def potential(self, x: Tensor) -> Tensor:

@@ -334,7 +334,7 @@ for epoch in range(start, epochs+1):
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)))
 
     # loss=torch.mean(loss_elocal)  
-    ratio_no_mean_test = torch.exp((logabs - (old_logabs).detach()))
+    ratio_no_mean_test = torch.exp(2 * (logabs - (old_logabs).detach()))
     loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
      
     
@@ -397,7 +397,7 @@ for epoch in range(start, epochs+1):
         writer_t.write_to_file(time_filename)
 
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | weight ratio: %6.6f | waited epochs: %6i \r" %
-                     (epoch, energy_mean, the_current_loss ,np.sqrt(energy_var.item() / nwalkers), gs_CI, end-start, wait_epochs, weighted_ratio, waited_epochs))
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, weighted_ratio, waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
