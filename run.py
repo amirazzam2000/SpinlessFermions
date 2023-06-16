@@ -334,7 +334,7 @@ for epoch in range(start, epochs+1):
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)))
 
     # loss=torch.mean(loss_elocal)  
-    ratio_no_mean_test = torch.exp(2 * (logabs - (old_logabs).detach()))
+    ratio_no_mean_test = torch.exp((logabs - (old_logabs).detach()))
     loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
      
     
