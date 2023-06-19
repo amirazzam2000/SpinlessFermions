@@ -343,6 +343,7 @@ for epoch in range(start, epochs+1):
     # loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
 
     loss = torch.mean(loss1) - torch.mean(loss2)
+    loss = clip(loss, clip_factor=5)
      
     
     optim.zero_grad()
