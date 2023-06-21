@@ -30,7 +30,7 @@ if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
 
 
-envelope_path = "results/energy/checkpoints/ES_A4_Loss2_A04_MH001_H064_L02_D01_Tanh_W4096_P010000_V1.00e+01_S5.00e-01_Adam_PT_False_device_cuda_dtype_float64_freeze_False_trans_False_chkp"
+envelope_path = "results/energy/checkpoints/ES_A4_Loss2_A04_MH001_H064_L02_D01_Tanh_W4096_P010000_V1.00e+01_S5.00e-01_Adam_PT_False_device_cuda_dtype_float64_freeze_False_trans_False_chkp.pt"
 
 
 model_name = "partial_data/model-A2-for-no-freezing-w-MH-C-" + model_name_tag
