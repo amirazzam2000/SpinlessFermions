@@ -34,8 +34,8 @@ envelope_path = "results/energy/checkpoints/ES_A4_Loss2_A04_MH001_H064_L02_D01_T
 
 
 model_name = "partial_data/model-A2-for-no-freezing-w-MH-C-" + model_name_tag
-os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs 100000  {} -T {} > {}/env_no_trans_w_no_freezing_w_MH.txt".format(
+os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs 100000  {} -T {} > {}/env2_no_trans_w_no_freezing_w_MH.txt".format(
     num_pre_particles, model_name, directory, noes, tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -LE {} -UL 100 -LL 1 --epochs 100000  --preepochs 0 -F {} -T {} > {}/env_no_trans_w_no_freezing_w_MH.txt".format(
-    num_particles, model_name, directory, envelope_path ,noes, "Envelope"  + tag, out_dir))
+os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -LE {} -UL 100 -LL 1 --epochs 100000  --preepochs 0 -F {} -T {} > {}/env2_no_trans_w_no_freezing_w_MH.txt".format(
+    num_particles, model_name, directory, envelope_path ,noes, "Envelope2_"  + tag, out_dir))
