@@ -6,7 +6,7 @@ from typing import Callable, Tuple
 import numpy as np
 import os, warnings, sys
 from Writers import WriteToFile
-from Layers import EquivariantLayer
+from Layers import EquivariantLayer, LogEnvelope
 
 
 def unsqueeze_to_size(m: Tensor, s: int) -> Tensor:
@@ -157,6 +157,35 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
         print("Saving model to %s - new" % (model_path))
         start=0
     return {'start':start, 'device':device, 'net':net, 'optim':optim, 'sampler':sampler}
+
+
+def load_envelope(envelope_path: str, device: torch.device, net: nn.Module, freeze=False) -> dict:
+    #, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module):
+    r"""A function to load in an object saved from `torch.save` if the file exists already. The method returns a dict 
+    """
+    if(os.path.isfile(envelope_path)):
+        print("Envelope already exists %s - transferring" % (envelope_path))
+        state_dict = torch.load(f=envelope_path, map_location=device)
+        state_net = state_dict['model_state_dict']
+
+        net1_dict = net.state_dict()
+
+        pretrained_dict = {k: v for k, v in state_net.items(
+        ) if k in net1_dict and state_net[k].shape == net1_dict[k].shape and "log_envelope.log_envs" in k}
+
+        net1_dict.update(pretrained_dict)
+        net.load_state_dict(net1_dict)
+
+        if len(pretrained_dict) > 0:
+            print("sucessfully copied envelope!")
+            if freeze:
+                for n, p in net.log_envelope.named_parameters():
+                    p.requires_grad = False
+
+    for n, p in net.named_parameters():
+        print(n, "grad: ", p.requires_grad)
+
+    return net
 
 def get_batches_of_measurements(nbatches: int, nwalkers: int, sampler: nn.Module, burn_in: int, calc_local_energy: Callable):
   r"""Simple function to get batches of measurements with ease.

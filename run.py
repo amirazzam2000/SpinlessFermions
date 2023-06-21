@@ -20,7 +20,7 @@ from Samplers import MetropolisHastings
 from Hamiltonian import HarmonicOscillatorWithInteraction1D as HOw1D
 from Pretraining import HermitePolynomialMatrix 
 
-from utils import load_dataframe, load_model, count_parameters, get_groundstate
+from utils import load_dataframe, load_model, count_parameters, get_groundstate, load_envelope
 from utils import get_params, sync_time, clip, calc_pretraining_loss
 
 import argparse
@@ -56,6 +56,7 @@ add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
+parser.add_argument("-LE", "--load_envelope_name",       type=str,   default=None,     help="The path to the input model to extract the envelope from")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
 parser.add_argument("-T", "--tag",       type=str,   default="",     help="tag the name of the file")
 
@@ -69,6 +70,7 @@ num_layers = args.num_layers  #number of layers in network
 num_dets = args.num_dets      #number of determinants (accepts arb. value)
 model_name = args.model_name      #the name of the model
 load_model_name = args.load_model_name      #the name of the model
+load_envelope_name = args.load_envelope  # the name of the model
 freeze = args.freeze    
 nwalkers = args.num_walkers
 early_stopping_active = not args.no_early_stopping
@@ -237,6 +239,9 @@ if load_model_name is not None:
     print("freezing = ", freeze)
     if freeze:
         print("reduced number of parameters is: ",  count_parameters(net))
+    
+    if load_envelope_name is not None:
+        net = load_envelope(load_envelope_name, device=device, net=net, freeze=True)
 
 else :
     output_dict = load_model(model_path=model_path, device=device, net=net, optim=optim, sampler=sampler)
@@ -332,7 +337,9 @@ for epoch in range(start, epochs+1):
         mean_elocal = torch.mean(elocal)
     
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
+    
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)))
+
     loss1 = (ratio_no_mean * (elocal - mean_elocal)).detach() * logabs
 
     loss2 = (ratio_no_mean * (elocal - mean_elocal)).detach() * torch.mean(ratio_no_mean.detach() * logabs)
@@ -343,7 +350,7 @@ for epoch in range(start, epochs+1):
     # loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
 
     loss = torch.mean(loss1) - torch.mean(loss2)
-    loss = clip(loss, clip_factor=5)
+    # loss = clip(loss, clip_factor=5)
      
     
     optim.zero_grad()
