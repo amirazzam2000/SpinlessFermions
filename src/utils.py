@@ -114,7 +114,7 @@ def load_dataframe(filename: str) -> WriteToFile:
     return writer
 
 
-def load_model(model_path: str, device: torch.device, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module,fix_size=False, freeze=False) -> dict:
+def load_model(model_path: str, device: torch.device, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module, freeze=False) -> dict:
         #, net: nn.Module, optim: torch.optim.Optimizer, sampler: nn.Module):
     r"""A function to load in an object saved from `torch.save` if the file exists already. The method returns a dict 
     """
@@ -124,20 +124,20 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
 
         start=state_dict['epoch']+1 #start at next epoch
         state_net = state_dict['model_state_dict']
-        if fix_size: 
+        if freeze: 
             net1_dict = net.state_dict()
             pretrained_dict = {k: v for k, v in state_net.items() if k in net1_dict and state_net[k].shape == net1_dict[k].shape}
             net1_dict.update(pretrained_dict)
             net.load_state_dict(net1_dict)
-            if freeze:
 
-                for i, layer in enumerate(net.layers):
-                    if isinstance(layer, EquivariantLayer):
-                        for n, p in layer.named_parameters():
-                            layer_name = "layers."+str(i)+"."+ n
-                            if state_net[layer_name].shape == p.shape and (state_net[layer_name] == p).all().item():
-                                p.requires_grad = False
-                                
+
+            for i, layer in enumerate(net.layers):
+                if isinstance(layer, EquivariantLayer):
+                    for n, p in layer.named_parameters():
+                        layer_name = "layers."+str(i)+"."+ n
+                        if state_net[layer_name].shape == p.shape and (state_net[layer_name] == p).all().item():
+                            p.requires_grad = False
+
             for n, p in net.named_parameters():
                 print(n, "grad: ", p.requires_grad)
         else:
