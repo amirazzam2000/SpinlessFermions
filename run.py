@@ -5,7 +5,7 @@ import numpy as np
 
 import os, sys, time
 
-torch.manual_seed(0)
+# torch.manual_seed(0)
 torch.set_printoptions(4)
 torch.backends.cudnn.benchmark=True
 torch.set_default_dtype(torch.float64)
@@ -334,7 +334,7 @@ for epoch in range(start, epochs+1):
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
 
-        mean_elocal = torch.mean(elocal)
+        mean_elocal = torch.mean(elocal * ratio_no_mean)
     
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
     
@@ -484,5 +484,5 @@ for i in range(num_samples):
 m_ene = m_ene/num_samples
 v_ene = v_ene/num_samples
 
-print("mean energy = ", m_ene )
-print("variance in energy = ", v_ene )
+print("mean energy = ", m_ene.item() )
+print("variance in energy = ", v_ene.item() )

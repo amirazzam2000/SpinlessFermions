@@ -2,13 +2,13 @@ import sys
 import os
 
 
-tag = "ES_A4_Repeat"
+tag = "ES_A4"
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
-model_name_tag = "-ES-A4-R"
+model_name_tag = "-ES-A4"
 
 
 noes = "" if Enable_ES else "-NoES"
@@ -109,9 +109,9 @@ os.system("python3 run.py -N {} -V 5 -S 0.5   -M {} -LM {} -DIR {} -UL 100 -LL 1
     num_particles, model_name_f, model_name, directory, noes, tag, out_dir))
 
 os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/w_trans_w_freezing_w_MH_part2.txt".format(
-    num_particles, model_name_f, directory, noes, tag, out_dir))
+    num_particles, model_name_f, directory, noes, tag + "_w_trans_w_freezing", out_dir))
 os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs 100000  --preepochs 0 -F {} -T {} >> {}/w_trans_w_freezing_w_MH_part2.txt".format(
-    num_particles, model_name_f, directory, noes, tag, out_dir))
+    num_particles, model_name_f, directory, noes,  tag + "_w_trans_w_freezing_w_freezing", out_dir))
 
 
 # no WMH w trans w freezing
@@ -129,6 +129,6 @@ os.system("python3 run.py -N {} -V 5 -S 0.5   -M {} -LM {} -DIR {} -UL 1 -LL 1 -
     num_particles, model_name_f, model_name, directory, noes, tag, out_dir))
 
 os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/w_trans_w_freezing_no_MH_part2.txt".format(
-    num_particles, model_name_f, directory, noes, tag, out_dir))
+    num_particles, model_name_f, directory, noes, tag + "_w_trans_w_freezing", out_dir))
 os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 -F {} -T {} >> {}/w_trans_w_freezing_no_MH_part2.txt".format(
-    num_particles, model_name_f, directory, noes, tag, out_dir))
+    num_particles, model_name_f, directory, noes, tag + "_w_trans_w_freezing_w_freezing", out_dir))

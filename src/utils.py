@@ -137,22 +137,18 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
                             layer_name = "layers."+str(i)+"."+ n
                             if state_net[layer_name].shape == p.shape and (state_net[layer_name] == p).all().item():
                                 p.requires_grad = False
-
-                # for n, p in net.named_parameters():
-                #     if state_net[n].shape == p.shape and (state_net[n] == p).all().item():
-                #         p.requires_grad = False
-
+                                
             for n, p in net.named_parameters():
                 print(n, "grad: ", p.requires_grad)
         else:
             net.load_state_dict(state_net)
-        optim.load_state_dict(state_dict['optim_state_dict'])
-        optim._steps = start        #update epoch in optim too!
-        loss = state_dict['loss']
-        sampler.chains = state_dict['chains']
-        sampler.log_prob = state_dict['log_prob'] #cache log_prob too!
-        sampler.sigma = state_dict['sigma'] #optimal sigma for proposal distribution!
-        print("Model resuming at epoch %6i with energy %6.4f MeV" % (start, loss))
+            optim.load_state_dict(state_dict['optim_state_dict'])
+            optim._steps = start        #update epoch in optim too!
+            loss = state_dict['loss']
+            sampler.chains = state_dict['chains']
+            sampler.log_prob = state_dict['log_prob'] #cache log_prob too!
+            sampler.sigma = state_dict['sigma'] #optimal sigma for proposal distribution!
+            print("Model resuming at epoch %6i with energy %6.4f MeV" % (start, loss))
     else:
         print("Saving model to %s - new" % (model_path))
         start=0
