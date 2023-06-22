@@ -228,7 +228,7 @@ writer = load_dataframe(filename)
 
 if load_model_name is not None:
     output_dict = load_model(model_path=load_model_name, device=device,
-                             net=net, optim=optim, sampler=sampler, freeze=freeze)
+                             net=net, optim=optim, sampler=sampler, fix_size=True, freeze=freeze)
     sampler = MetropolisHastings(network=net,
                                  dof=nfermions,
                                  nwalkers=nwalkers,
