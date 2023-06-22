@@ -335,7 +335,7 @@ for epoch in range(start, epochs+1):
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
 
-        mean_elocal = torch.mean(elocal * ratio_no_mean)
+        mean_elocal = torch.mean(elocal)
     
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
     
@@ -343,8 +343,8 @@ for epoch in range(start, epochs+1):
 
     # loss1 = (ratio_no_mean * (elocal - mean_elocal)).detach() * logabs
     # loss2 = (ratio_no_mean * (elocal - mean_elocal)).detach() * torch.mean(ratio_no_mean.detach() * logabs)
-    loss1 = (ratio_no_mean * (elocal)).detach() * logabs
-    loss2 = (ratio_no_mean * (elocal)).detach() * torch.mean(ratio_no_mean.detach() * logabs)
+    loss1 = (ratio_no_mean * (elocal - mean_elocal)).detach() * logabs
+    loss2 = (ratio_no_mean * (elocal - mean_elocal)).detach() * torch.mean(ratio_no_mean.detach() * logabs)
 
     # loss=torch.mean(loss_elocal)  
 
