@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_Loss"
+tag = "ES_Loss_with_stability"
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2

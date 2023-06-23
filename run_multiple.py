@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "NoES_Loss"
+tag = "NoES_Loss_with_stability"
 Enable_ES = False
 num_particles = 4
 num_pre_particles = 2
