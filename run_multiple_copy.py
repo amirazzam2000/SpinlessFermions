@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_A4"
+tag = "ES_Loss"
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2

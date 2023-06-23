@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "NoES_A4"
+tag = "NoES_Loss"
 Enable_ES = False
 num_particles = 4
 num_pre_particles = 2
