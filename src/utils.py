@@ -141,16 +141,16 @@ def load_model(model_path: str, device: torch.device, net: nn.Module, optim: tor
             for n, p in net.named_parameters():
                 print(n, "grad: ", p.requires_grad)
             
-            if len(pretrained_dict) == len(net1_dict):
-                optim.load_state_dict(state_dict['optim_state_dict'])
-                optim._steps = start  # update epoch in optim too!
-                loss = state_dict['loss']
-                sampler.chains = state_dict['chains']
-                sampler.log_prob = state_dict['log_prob']  # cache log_prob too!
-                # optimal sigma for proposal distribution!
-                sampler.sigma = state_dict['sigma']
-                print("Model resuming at epoch %6i with energy %6.4f MeV" %
-                    (start, loss))
+            # if len(pretrained_dict) == len(net1_dict):
+            #     optim.load_state_dict(state_dict['optim_state_dict'])
+            #     optim._steps = start  # update epoch in optim too!
+            #     loss = state_dict['loss']
+            #     sampler.chains = state_dict['chains']
+            #     sampler.log_prob = state_dict['log_prob']  # cache log_prob too!
+            #     # optimal sigma for proposal distribution!
+            #     sampler.sigma = state_dict['sigma']
+            #     print("Model resuming at epoch %6i with energy %6.4f MeV" %
+            #         (start, loss))
 
         else:
             net.load_state_dict(state_net)
