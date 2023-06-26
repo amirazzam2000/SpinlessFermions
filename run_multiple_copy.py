@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_Fix_Seed"
+tag = "ES_Fix_Seed_Debug"
 Enable_ES = True
 num_epochs = 100000
 num_particles = 4

@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "NoES_Fix_Seed"
+tag = "NoES_Fix_Seed_Debug"
 Enable_ES = False
 num_particles = 4
 num_pre_particles = 2

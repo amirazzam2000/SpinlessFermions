@@ -2,6 +2,7 @@ import pandas as pd
 import torch
 from torch import nn, Tensor
 import numpy as np
+import pickle
 
 import os, sys, time
 
@@ -482,9 +483,10 @@ writer.write_to_file(filename)
 writer_t.write_to_file(time_filename)
 
 
-filename = "results/energy/data/weights.txt" if directory is None else directory.rstrip('\\') + "/weights.txt"
+filename = "results/energy/data/weights.pkl" if directory is None else directory.rstrip('\\') + "/weights.pkl"
 
-np.savetxt(filename, weights_list, delimiter=',')
+with open('file.pkl', 'wb') as f:
+  pickle.dump(weights_list, f)
 
 print("\nDone")
 print("\nNumber of epochs:", epoch)
