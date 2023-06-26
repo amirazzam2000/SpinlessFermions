@@ -322,6 +322,8 @@ for epoch in range(start, epochs+1):
     p = clip(p, clip_factor=5)
     g = clip(g, clip_factor=5)
 
+
+
     with torch.no_grad():
         ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
         
@@ -335,6 +337,10 @@ for epoch in range(start, epochs+1):
        
         r_mean = torch.mean(ratio_no_mean)  
         energy_mean = torch.mean(elocal * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
+
+        k = torch.mean(k * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
+        p = torch.mean(p * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
+        g = torch.mean(g * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
 
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
@@ -407,7 +413,8 @@ for epoch in range(start, epochs+1):
     writer_t(wait_data)
 
     for i in net.log_envelope.log_envs[0].parameters():
-        weights_list.append(i.numpy())
+        weights_list.append(i.cpu().detach().numpy())
+
 
     if(epoch % em_save_every_ith == 0):
         torch.save({'epoch':epoch,
