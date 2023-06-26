@@ -5,7 +5,7 @@ import numpy as np
 
 import os, sys, time
 
-# torch.manual_seed(0)
+torch.manual_seed(0)
 torch.set_printoptions(4)
 torch.backends.cudnn.benchmark=True
 torch.set_default_dtype(torch.float64)
