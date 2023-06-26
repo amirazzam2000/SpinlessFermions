@@ -264,6 +264,7 @@ error_tolerance = 0
 window_size = 1000
 mean_energy_list = []
 var_energy_list = []
+weights_list = []
 sliding_window_loss = 0
 last_window_loss = 0
 avg_loss_diff = 0
@@ -318,8 +319,17 @@ for epoch in range(start, epochs+1):
     elocal = calc_elocal(x) 
     elocal = clip(elocal, clip_factor=5)
 
-
     with torch.no_grad():
+
+        k = calc_elocal.kinetic(x)
+        k = clip(k, clip_factor=5)
+        
+        p = calc_elocal.potential(x)
+        p = clip(p, clip_factor=5)
+
+        g = calc_elocal.gaussian_interaction(x)
+        g = clip(g, clip_factor=5)
+
         ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
         
         weighted_ratio = torch.mean(ratio_no_mean).item()
@@ -380,6 +390,9 @@ for epoch in range(start, epochs+1):
     stats['loss'] = loss.item() 
     stats['energy_mean'] = energy_mean.item() 
     stats['energy_std'] = np.sqrt(energy_var.item() / nwalkers) #energy_var.sqrt().item() 
+    stats['kinetic'] = k.item()
+    stats['potential'] = p.item()
+    stats['gaussian'] = g.item()
     stats['CI'] = gs_CI
     stats['proposal_width'] = sampler.sigma.item() 
     stats['acceptance_rate'] = sampler.acceptance_rate if not isinstance(
@@ -399,6 +412,9 @@ for epoch in range(start, epochs+1):
     
     writer(stats)
     writer_t(wait_data)
+
+    for i in net.log_envelope.log_envs[0].parameters():
+        weights_list.append(i.numpy())
 
     if(epoch % em_save_every_ith == 0):
         torch.save({'epoch':epoch,
@@ -465,8 +481,14 @@ t1 = sync_time() - t0
 writer.write_to_file(filename)
 writer_t.write_to_file(time_filename)
 
+
+filename = "results/energy/data/weights.txt" if directory is None else directory.rstrip('\\') + "/weights.txt"
+
+np.savetxt(filename, weights_list, delimiter=',')
+
 print("\nDone")
-print("\nTime taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
+print("\nNumber of epochs:", epoch)
+print("Time taken: ", total_time, " (accumulated wall time)\n\t", t1, "(recorded time)")
 
 
 num_samples = 1000
