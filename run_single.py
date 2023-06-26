@@ -6,8 +6,8 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 100000
-tag = "Single_ES_Trans"
-model_name_tag = "-Single-ES-Trans"
+tag = "Single_ES_Freezing_test"
+model_name_tag = "-Single-ES-FT"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
 
