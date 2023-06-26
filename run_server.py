@@ -9,8 +9,8 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 100000
-tag = "Single_ES_Trans"
-model_name_tag = "-Single-ES-Trans"
+tag = "Single_ES_Trans2"
+model_name_tag = "-Single-ES-Trans2"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
 
@@ -30,16 +30,16 @@ if not os.path.exists(out_dir):
 ################################################################### Interaction Transfer testing sequence #################################################################################
 
 
-# directory = directory_base + "/without_ES"
-# if not os.path.exists(directory):
-#     os.system("mkdir {}".format(directory))
+directory = directory_base + "/without_ES"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
 
-# model_name = "partial_data/model-A4-for-trans_NoES" + model_name_tag
-# os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
-#     num_particles, model_name, directory, "-NoES", tag, out_dir))
+model_name = "partial_data/model-A4-for-trans_NoES" + model_name_tag
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
+    num_particles, model_name, directory, "-NoES", tag, out_dir))
 
-# os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/without_ES.txt".format(
-#     num_particles, model_name, directory, noes, tag, out_dir))
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/without_ES.txt".format(
+    num_particles, model_name, directory, noes, tag, out_dir))
 
 
 directory = directory_base + "/with_ES"
