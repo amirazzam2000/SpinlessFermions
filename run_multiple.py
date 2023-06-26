@@ -2,13 +2,13 @@ import sys
 import os
 
 
-tag = "NoES_Loss_with_stability"
+tag = "NoES_Fix_Seed"
 Enable_ES = False
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag 
 out_dir = "./out/" + tag 
-model_name_tag = "-NoES-A4"
+model_name_tag = "-NoES-Fix-Seed"
 
 
 noes = "" if Enable_ES else "-NoES" 
