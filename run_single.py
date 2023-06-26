@@ -6,8 +6,8 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 100000
-tag = "Single_ES_A4"
-model_name_tag = "-Single-ES-A4-IT"
+tag = "Single_ES_Loss"
+model_name_tag = "-Single-ES-Loss"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
 
