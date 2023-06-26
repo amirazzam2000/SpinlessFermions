@@ -316,20 +316,13 @@ for epoch in range(start, epochs+1):
         time_stats['MH_time'] = 0
         sign, logabs = net(x)
 
-    elocal = calc_elocal(x) 
+    elocal, k, p, g = calc_elocal(x, return_all=True)
     elocal = clip(elocal, clip_factor=5)
+    k = clip(k, clip_factor=5)
+    p = clip(p, clip_factor=5)
+    g = clip(g, clip_factor=5)
 
     with torch.no_grad():
-
-        k = calc_elocal.kinetic(x)
-        k = clip(k, clip_factor=5)
-        
-        p = calc_elocal.potential(x)
-        p = clip(p, clip_factor=5)
-
-        g = calc_elocal.gaussian_interaction(x)
-        g = clip(g, clip_factor=5)
-
         ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
         
         weighted_ratio = torch.mean(ratio_no_mean).item()

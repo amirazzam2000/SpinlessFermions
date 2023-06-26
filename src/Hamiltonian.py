@@ -41,13 +41,16 @@ class HarmonicOscillatorWithInteraction1D(nn.Module):
     def gaussian_interaction(self, x: Tensor) -> Tensor:
         return self.gauss_const * ( torch.exp(-(x.unsqueeze(-2) - x.unsqueeze(-1))**2/(2*self.sigma0**2)).triu(diagonal=1).sum(dim=(-2,-1)) )
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor, return_all = False) -> Tensor:
         _kin = self.kinetic(x)
         _pot = self.potential(x)
         _int = self.gaussian_interaction(x)
 
         _eloc = _kin + _pot + _int
-        return _eloc
+        if return_all:
+            return _eloc, _kin, _pot, _int
+        else:
+            return _eloc
     
 
 class GaussianInteraction1D(nn.Module):
