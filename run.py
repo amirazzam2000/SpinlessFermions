@@ -485,7 +485,7 @@ writer_t.write_to_file(time_filename)
 
 filename = "results/energy/data/weights.pkl" if directory is None else directory.rstrip('\\') + "/weights.pkl"
 
-with open('file.pkl', 'wb') as f:
+with open(filename, 'wb') as f:
   pickle.dump(weights_list, f)
 
 print("\nDone")
