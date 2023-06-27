@@ -291,6 +291,9 @@ waited_epochs = 0
 
 #Energy Minimisation
 t0 = sync_time()
+
+x, _ = sampler(n_sweeps)
+
 for epoch in range(start, epochs+1):
     waited_epochs += 1
     wait_data = {}
@@ -298,7 +301,7 @@ for epoch in range(start, epochs+1):
 
     start=sync_time()
 
-    if waited_epochs > wait_epochs:
+    if waited_epochs >= wait_epochs:
         t_MH = sync_time()  # time.time()
         x, _ = sampler(n_sweeps)
         time_stats['MH_time'] = sync_time() - t_MH
@@ -326,7 +329,10 @@ for epoch in range(start, epochs+1):
 
 
     with torch.no_grad():
-        ratio_no_mean = torch.exp(2 * (logabs - old_logabs))    
+        ratio_no_mean = torch.exp(2 * (logabs - old_logabs))   
+        
+        # ratio_no_mean = 0 if ratio_no_mean < 0 else ratio_no_mean
+        # ratio_no_mean = 2 if ratio_no_mean > 2 else ratio_no_mean
         
         weighted_ratio = torch.mean(ratio_no_mean).item()
         wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
