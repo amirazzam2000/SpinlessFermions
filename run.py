@@ -339,9 +339,9 @@ for epoch in range(start, epochs+1):
         r_mean = torch.mean(ratio_no_mean)  
         energy_mean = torch.mean(elocal * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
 
-        k = torch.mean(k * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
-        p = torch.mean(p * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
-        g = torch.mean(g * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
+        k = torch.mean(k)  # sqrt(var/ num_walkers)
+        p = torch.mean(p)  # sqrt(var/ num_walkers)
+        g = torch.mean(g)  # sqrt(var/ num_walkers)
 
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
