@@ -294,6 +294,11 @@ t0 = sync_time()
 
 x, _ = sampler(n_sweeps)
 
+
+weights_filename = "results/energy/data/weights.pkl" if directory is None else directory.rstrip('\\') + "/weights.pkl"
+
+f=open(weights_filename, 'wb')
+
 for epoch in range(start, epochs+1):
     waited_epochs += 1
     wait_data = {}
@@ -419,8 +424,10 @@ for epoch in range(start, epochs+1):
     writer(stats)
     writer_t(wait_data)
 
-    for i in net.log_envelope.log_envs[0].parameters():
-        weights_list.append(i.cpu().detach().numpy())
+    # for i in net.log_envelope.log_envs[0].parameters():
+    #     weights_list.append(i.cpu().detach().numpy())
+    pickle.dump(net.state_dict(), f)
+    
 
 
     if(epoch % em_save_every_ith == 0):
@@ -489,10 +496,9 @@ writer.write_to_file(filename)
 writer_t.write_to_file(time_filename)
 
 
-filename = "results/energy/data/weights.pkl" if directory is None else directory.rstrip('\\') + "/weights.pkl"
 
-with open(filename, 'wb') as f:
-  pickle.dump(weights_list, f)
+
+
 
 print("\nDone")
 print("\nNumber of epochs:", epoch)
