@@ -431,7 +431,7 @@ for epoch in range(start, epochs+1):
 
     # for i in net.log_envelope.log_envs[0].parameters():
     #     weights_list.append(i.cpu().detach().numpy())
-    pickle.dump(net.state_dict(), f)
+    # pickle.dump(net.state_dict(), f)
     
 
 
