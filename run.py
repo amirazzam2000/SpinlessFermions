@@ -343,7 +343,8 @@ for epoch in range(start, epochs+1):
         
         weighted_ratio = torch.mean(ratio_no_mean).item()
         # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
-        wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - ess)
+        wait_epochs = upper_lim - \
+            (upper_lim - lower_lim) * np.abs(1 - ess/nwalkers)
         wait_epochs = wait_epochs if wait_epochs > 0 else 0
 
         wait_data['waited_epochs'] = [waited_epochs]
