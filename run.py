@@ -335,18 +335,21 @@ for epoch in range(start, epochs+1):
 
     with torch.no_grad():
         ratio_no_mean = torch.exp(2 * (logabs - old_logabs))   
+        ess = (torch.pow(torch.sum(ratio_no_mean), 2) /
+               torch.sum(torch.pow(ratio_no_mean, 2))).item()
         
         # ratio_no_mean = 0 if ratio_no_mean < 0 else ratio_no_mean
         # ratio_no_mean = 2 if ratio_no_mean > 2 else ratio_no_mean
         
         weighted_ratio = torch.mean(ratio_no_mean).item()
-        wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
+        # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
+        wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - ess)
         wait_epochs = wait_epochs if wait_epochs > 0 else 0
 
         wait_data['waited_epochs'] = [waited_epochs]
         wait_data['ratio'] = weighted_ratio
         wait_data['wait_threshold'] = wait_epochs
-        wait_data['ESS'] = (torch.pow(torch.sum(ratio_no_mean),2) / torch.sum(torch.pow(ratio_no_mean, 2))).item()
+        wait_data['ESS'] = ess
        
 
         r_mean = torch.mean(ratio_no_mean)  
