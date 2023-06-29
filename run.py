@@ -346,6 +346,7 @@ for epoch in range(start, epochs+1):
         wait_data['waited_epochs'] = [waited_epochs]
         wait_data['ratio'] = weighted_ratio
         wait_data['wait_threshold'] = wait_epochs
+        wait_data['ESS'] = torch.pow(torch.sum(ratio_no_mean),2) / torch.sum(torch.pow(ratio_no_mean, 2))
        
 
         r_mean = torch.mean(ratio_no_mean)  
@@ -358,9 +359,9 @@ for epoch in range(start, epochs+1):
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
 
-        # normalize the ratio 
-        ratio_no_mean = ratio_no_mean / torch.sum(ratio_no_mean)
-        r_mean = torch.mean(ratio_no_mean)  
+        # # normalize the ratio 
+        # ratio_no_mean = ratio_no_mean / torch.sum(ratio_no_mean)
+        # r_mean = torch.mean(ratio_no_mean)  
 
         mean_elocal = torch.mean(elocal * ratio_no_mean) 
     
