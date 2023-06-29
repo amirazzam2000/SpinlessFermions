@@ -346,7 +346,7 @@ for epoch in range(start, epochs+1):
         wait_data['waited_epochs'] = [waited_epochs]
         wait_data['ratio'] = weighted_ratio
         wait_data['wait_threshold'] = wait_epochs
-        wait_data['ESS'] = torch.pow(torch.sum(ratio_no_mean),2) / torch.sum(torch.pow(ratio_no_mean, 2))
+        wait_data['ESS'] = (torch.pow(torch.sum(ratio_no_mean),2) / torch.sum(torch.pow(ratio_no_mean, 2))).item()
        
 
         r_mean = torch.mean(ratio_no_mean)  
