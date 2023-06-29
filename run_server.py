@@ -2,14 +2,14 @@ import sys
 import os
 
 
-tag = "ES_Server_Debug_ess_new"
+tag = "ES_Server_Debug_ess3"
 Enable_ES = True
 num_epochs = 10000
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
-model_name_tag = "-ES-Server-Debug-Ess-new"
+model_name_tag = "-ES-Server-Debug-Ess3"
 
 
 noes = "" if Enable_ES else "-NoES"
