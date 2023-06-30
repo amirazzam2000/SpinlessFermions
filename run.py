@@ -85,7 +85,7 @@ directory = args.dir
 nwalkers = args.num_walkers
 n_sweeps=10 #n_discard
 std=1.#0.02#1.
-target_acceptance=0.5
+target_acceptance=0.3
 
 V0 = args.V0
 sigma0 = args.sigma0
@@ -324,6 +324,8 @@ for epoch in range(start, epochs+1):
     else: 
         time_stats['MH_time'] = 0
         sign, logabs = net(x)
+    
+    min_logabs = torch.min(logabs)
 
     elocal, k, p, g = calc_elocal(x, return_all=True)
     elocal = clip(elocal, clip_factor=5)
@@ -409,6 +411,7 @@ for epoch in range(start, epochs+1):
     total_time = end - start
     stats['epoch'] = [epoch] #must pass index
     stats['loss'] = loss.item() 
+    stats['min_logabs'] = min_logabs
     stats['energy_mean'] = energy_mean.item() 
     stats['energy_std'] = np.sqrt(energy_var.item() / nwalkers) #energy_var.sqrt().item() 
     stats['kinetic'] = k.item()
@@ -454,8 +457,8 @@ for epoch in range(start, epochs+1):
         writer.write_to_file(filename)
         writer_t.write_to_file(time_filename)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | weight ratio: %6.6f | waited epochs: %6i \r" %
-                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, weighted_ratio, waited_epochs))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | min logabs: %6.6f | weight ratio: %6.6f | waited epochs: %6i \r" %
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, min_logabs , weighted_ratio, waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
