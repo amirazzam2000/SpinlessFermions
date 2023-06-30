@@ -85,7 +85,7 @@ directory = args.dir
 nwalkers = args.num_walkers
 n_sweeps=10 #n_discard
 std=1.#0.02#1.
-target_acceptance=0.3
+target_acceptance=0.5
 
 V0 = args.V0
 sigma0 = args.sigma0
@@ -411,7 +411,7 @@ for epoch in range(start, epochs+1):
     total_time = end - start
     stats['epoch'] = [epoch] #must pass index
     stats['loss'] = loss.item() 
-    stats['min_logabs'] = min_logabs
+    stats['min_logabs'] = min_logabs.item()
     stats['energy_mean'] = energy_mean.item() 
     stats['energy_std'] = np.sqrt(energy_var.item() / nwalkers) #energy_var.sqrt().item() 
     stats['kinetic'] = k.item()
