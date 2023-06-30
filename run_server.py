@@ -2,14 +2,14 @@ import sys
 import os
 
 
-tag = "ES_Server_Debug_ess3"
+tag = "ES_Server_Debug_min_logabs"
 Enable_ES = True
 num_epochs = 10000
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
-model_name_tag = "-ES-Server-Debug-Ess3"
+model_name_tag = "-ES-Server-Debug-Min-Logabs"
 
 
 noes = "" if Enable_ES else "-NoES"
