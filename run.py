@@ -393,7 +393,7 @@ for epoch in range(start, epochs+1):
     # loss1 = (ratio_no_mean * elocal / r_mean).detach() * logabs
     # loss2 = (ratio_no_mean * elocal / r_mean).detach() * torch.mean((ratio_no_mean / r_mean).detach() * logabs)
 
-    loss1 = (I * (elocal - torch.mean(I* elocal))).detach() * logabs
+    loss1 = 2. * (I * (elocal - torch.mean(elocal))).detach() * logabs
     #loss2 = (I * (elocal- torch.mean(elocal))).detach() * torch.mean(logabs)
 
     # loss=torch.mean(loss_elocal) / r_mean.detach()  
