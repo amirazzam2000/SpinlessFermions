@@ -2,13 +2,13 @@ import sys
 import os
 
 
-tag = "NoES_30_Jun"
+tag = "NoES_01_Jul"
 Enable_ES = False
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag 
 out_dir = "./out/" + tag 
-model_name_tag = "-NoES-30-Jun"
+model_name_tag = "-NoES-01-Jul"
 
 
 noes = "" if Enable_ES else "-NoES" 
