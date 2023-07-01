@@ -308,6 +308,7 @@ for epoch in range(start, epochs+1):
 
     if waited_epochs >= wait_epochs:
         t_MH = sync_time()  # time.time()
+        x_old = x
         x, _ = sampler(n_sweeps)
         time_stats['MH_time'] = sync_time() - t_MH
 
@@ -393,14 +394,14 @@ for epoch in range(start, epochs+1):
     # loss2 = (ratio_no_mean * elocal / r_mean).detach() * torch.mean((ratio_no_mean / r_mean).detach() * logabs)
 
     loss1 = (I * (elocal - torch.mean(elocal))).detach() * logabs
-    loss2 = (I * (elocal- torch.mean(elocal))).detach() * torch.mean((I).detach() * logabs)
+    # loss2 = (I * (elocal- torch.mean(elocal))).detach() * torch.mean((I).detach() * logabs)
 
     # loss=torch.mean(loss_elocal) / r_mean.detach()  
 
     # ratio_no_mean_test = torch.exp(2 * (logabs - (old_logabs).detach()))
     # loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
 
-    loss = torch.mean(loss1) - torch.mean(loss2)
+    loss = torch.mean(loss1) #- torch.mean(loss2)
     # loss = 2* C * torch.mean(loss1) #/ r_mean.detach()
     # loss = clip(loss, clip_factor=5)
      
@@ -473,8 +474,8 @@ for epoch in range(start, epochs+1):
         writer.write_to_file(filename)
         writer_t.write_to_file(time_filename)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | min logabs: %6.6f | weight ratio: %6.6f | waited epochs: %6i \r" %
-                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, min_logabs , weighted_ratio, waited_epochs))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | min logabs: %6.6f | weight ratio: %6.6f | samples changed: %r | waited epochs: %6i \r" %
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, min_logabs , weighted_ratio, x_old == x, waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
