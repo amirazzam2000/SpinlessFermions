@@ -383,7 +383,7 @@ for epoch in range(start, epochs+1):
     # loss2 = (ratio_no_mean * (elocal - mean_elocal) / r_mean).detach() * torch.mean(ratio_no_mean.detach() * logabs)
 
     # loss1 = (ratio_no_mean * (elocal - mean_elocal)).detach() * logabs
-    loss1 = (ratio_no_mean * (elocal - C *  torch.mean(ratio_no_mean * elocal))).detach() * logabs
+    # loss1 = (ratio_no_mean * (elocal - C *  torch.mean(ratio_no_mean * elocal))).detach() * logabs
 
     # loss1 = (ratio_no_mean * (elocal - mean_elocal)).detach() #* logabs
     # loss2 = (ratio_no_mean * (elocal - mean_elocal)).detach() * torch.mean(ratio_no_mean.detach() * logabs)/ r_mean.detach()
@@ -391,13 +391,16 @@ for epoch in range(start, epochs+1):
     # loss1 = (ratio_no_mean * elocal / r_mean).detach() * logabs
     # loss2 = (ratio_no_mean * elocal / r_mean).detach() * torch.mean((ratio_no_mean / r_mean).detach() * logabs)
 
+    loss1 = (ratio_no_mean * C * elocal).detach() * logabs
+    loss2 = (ratio_no_mean * C * elocal).detach() * torch.mean((ratio_no_mean * C).detach() * logabs)
+
     # loss=torch.mean(loss_elocal) / r_mean.detach()  
 
     # ratio_no_mean_test = torch.exp(2 * (logabs - (old_logabs).detach()))
     # loss = torch.mean(loss_elocal * ratio_no_mean_test) / torch.mean(ratio_no_mean_test)
 
-    # loss = torch.mean(loss1) - torch.mean(loss2)
-    loss = 2* C * torch.mean(loss1) #/ r_mean.detach()
+    loss = torch.mean(loss1) - torch.mean(loss2)
+    # loss = 2* C * torch.mean(loss1) #/ r_mean.detach()
     # loss = clip(loss, clip_factor=5)
      
     
