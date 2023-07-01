@@ -475,7 +475,7 @@ for epoch in range(start, epochs+1):
         writer_t.write_to_file(time_filename)
 
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | min logabs: %6.6f | weight ratio: %6.6f | samples changed: %r | waited epochs: %6i \r" %
-                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, min_logabs , weighted_ratio, x_old == x, waited_epochs))
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, min_logabs , weighted_ratio, (x_old == x).all(), waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
