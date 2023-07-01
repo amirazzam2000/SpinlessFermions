@@ -369,15 +369,15 @@ for epoch in range(start, epochs+1):
         # ratio_no_mean = ratio_no_mean / torch.sum(ratio_no_mean)
         # r_mean = torch.mean(ratio_no_mean)  
 
-        mean_elocal = torch.mean(elocal * ratio_no_mean) 
+        mean_elocal = energy_mean #torch.mean(elocal * ratio_no_mean) 
     
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * logabs)
     # loss_elocal = 2.*(( ratio_no_mean * (elocal - mean_elocal) ).detach() * logabs)
     
     # loss_elocal = 2.*((elocal - torch.mean(elocal)).detach() * (logabs - torch.mean(logabs)))
 
-    loss1 = ((ratio_no_mean * elocal - mean_elocal) / r_mean).detach() * logabs
-    loss2 = ((ratio_no_mean * elocal - mean_elocal) / r_mean).detach() * \
+    loss1 = (ratio_no_mean * (elocal - mean_elocal) / r_mean).detach() * logabs
+    loss2 = (ratio_no_mean * (elocal - mean_elocal) / r_mean).detach() * \
         torch.mean(ratio_no_mean.detach() * logabs)
 
     # loss1 = (ratio_no_mean * (elocal - mean_elocal)).detach() #* logabs
