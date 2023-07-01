@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_Server_Debug_Loss12"
+tag = "ES_Server_Debug_Loss13"
 Enable_ES = True
 num_epochs = 10000
 num_particles = 4
