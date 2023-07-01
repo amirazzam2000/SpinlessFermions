@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_Server_Debug_Loss7"
+tag = "ES_Server_Debug_Loss8"
 Enable_ES = True
 num_epochs = 10000
 num_particles = 4
@@ -22,6 +22,7 @@ if not os.path.exists("./out"):
 
 if not os.path.exists(out_dir):
     os.system("mkdir {}".format(out_dir))
+
 
 # no WMH no trans no freezing
 
