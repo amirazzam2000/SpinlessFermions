@@ -2,9 +2,9 @@ import sys
 import os
 
 
-tag = "ES_Server_spikes_1"
+tag = "ES_Server_spikes_2"
 Enable_ES = True
-num_epochs = 10000
+num_epochs = 50000
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag
