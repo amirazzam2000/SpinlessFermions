@@ -7,7 +7,7 @@ num_particles = 4
 num_pre_particles = 2
 num_epochs = 50000
 tag = "Single_spikes_1"
-model_name_tag = "Single_ES_Trans_test-29-Jun"
+model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
 
