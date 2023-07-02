@@ -5,7 +5,7 @@ import os
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
-num_epochs = 50000
+num_epochs = 10000
 tag = "Single_spikes_1"
 model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
