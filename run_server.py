@@ -26,7 +26,7 @@ if not os.path.exists(out_dir):
 
 # no WMH no trans no freezing
 
-directory = directory_base + "/no_WMH_no_trans_no_freezing"
+directory = directory_base + "/NoES_no_WMH_no_trans_no_freezing"
 if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
 
