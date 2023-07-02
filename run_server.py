@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_Server_spikes_2"
+tag = "NoES_Server_spikes_2"
 Enable_ES = False
 num_epochs = 50000
 num_particles = 4
