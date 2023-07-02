@@ -326,7 +326,6 @@ for epoch in range(start, epochs+1):
         time_stats['MH_time'] = 0
         sign, logabs = net(x)
     
-    min_logabs = torch.min(logabs)
 
     elocal, k, p, g = calc_elocal(x, return_all=True)
     elocal = clip(elocal, clip_factor=5)
@@ -359,9 +358,26 @@ for epoch in range(start, epochs+1):
         r_mean = torch.mean(ratio_no_mean)  
         energy_mean = torch.mean(elocal * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
 
+        max_k = torch.max(k)
+        min_k = torch.min(k)
         k = torch.mean(k)  # sqrt(var/ num_walkers)
+
+        max_p = torch.max(p)
+        min_p = torch.min(p)
         p = torch.mean(p)  # sqrt(var/ num_walkers)
+
+        max_g = torch.max(g)
+        min_g = torch.min(g)
         g = torch.mean(g)  # sqrt(var/ num_walkers)
+
+        min_logabs = torch.min(logabs)
+        max_logabs = torch.max(logabs)
+        avg_logabs = torch.mean(logabs)
+
+        min_x = torch.min(x)
+        max_x = torch.max(x)
+        avg_x = torch.mean(x)
+
 
         energy_var = torch.mean((elocal - energy_mean )**2 * ratio_no_mean) / r_mean  # sqrt(var/ num_walkers)
         energy_var = torch.sqrt(energy_var / elocal.shape[0]) 
@@ -428,12 +444,31 @@ for epoch in range(start, epochs+1):
     total_time = end - start
     stats['epoch'] = [epoch] #must pass index
     stats['loss'] = loss.item() 
+    
     stats['min_logabs'] = min_logabs.item()
+    stats['max_logabs'] = max_logabs.item()
+    stats['avg_logabs'] = avg_logabs.item()
+
+    stats['min_x'] = min_x.item()
+    stats['max_x'] = max_x.item()
+    stats['avg_x'] = avg_x.item()
+
     stats['energy_mean'] = energy_mean.item() 
     stats['energy_std'] = np.sqrt(energy_var.item() / nwalkers) #energy_var.sqrt().item() 
+
+    stats['min_kinetic'] = min_k.item()
+    stats['max_kinetic'] = max_k.item()
+
+    stats['min_potential'] = min_p.item()
+    stats['max_potential'] = max_p.item()
+
+    stats['min_gaussian'] = min_g.item()
+    stats['max_gaussian'] = max_g.item()
+
     stats['kinetic'] = k.item()
     stats['potential'] = p.item()
     stats['gaussian'] = g.item()
+
     stats['CI'] = gs_CI
     stats['proposal_width'] = sampler.sigma.item() 
     stats['acceptance_rate'] = sampler.acceptance_rate if not isinstance(
