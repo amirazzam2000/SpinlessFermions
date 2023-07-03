@@ -2,8 +2,8 @@ import sys
 import os
 
 
-tag = "NoES_Server_spikes_2"
-Enable_ES = False
+tag = "ES_Server_sched_1"
+Enable_ES = True
 num_epochs = 50000
 num_particles = 4
 num_pre_particles = 2
@@ -26,12 +26,12 @@ if not os.path.exists(out_dir):
 
 # no WMH no trans no freezing
 
-directory = directory_base + "/NoES_no_WMH_no_trans_no_freezing"
-if not os.path.exists(directory):
-    os.system("mkdir {}".format(directory))
+# directory = directory_base + "/no_WMH_no_trans_no_freezing"
+# if not os.path.exists(directory):
+#     os.system("mkdir {}".format(directory))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 1 -LL 1 --epochs {}  {} -T {} > {}/no_trans_no_freezing_no_MH.txt".format(
-    num_particles, directory, num_epochs, noes, tag, out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 1 -LL 1 --epochs {}  {} -T {} > {}/no_trans_no_freezing_no_MH.txt".format(
+#     num_particles, directory, num_epochs, noes, tag, out_dir))
 
 # # no WMH no trans w freezing
 
@@ -61,12 +61,12 @@ os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 1 -LL 1 --epochs {}  {
 
 # w WMH no trans no freezing
 
-# directory = directory_base + "/w_WMH_no_trans_no_freezing"
-# if not os.path.exists(directory):
-#     os.system("mkdir {}".format(directory))
+directory = directory_base + "/w_WMH_no_trans_no_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
 
-# os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} > {}/no_trans_no_freezing_w_MH.txt".format(
-#     num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} > {}/no_trans_no_freezing_w_MH.txt".format(
+    num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
 
 # # w WMH no trans w freezing
 
