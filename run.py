@@ -341,8 +341,8 @@ for epoch in range(start, epochs+1):
     with torch.no_grad():
         ratio_no_mean = torch.exp(2 * (logabs - old_logabs))  
 
-        x_memory.append(x)
-        ratio_memory.append(ratio_no_mean)
+        # x_memory.append(x)
+        # ratio_memory.append(ratio_no_mean)
 
         ess = (torch.pow(torch.sum(ratio_no_mean), 2) /
                torch.sum(torch.pow(ratio_no_mean, 2))).item()
@@ -352,11 +352,14 @@ for epoch in range(start, epochs+1):
         
         weighted_ratio = torch.mean(ratio_no_mean)
 
-        s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
-        # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
-        wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - ess/nwalkers)
-        # wait_epochs = upper_lim - (upper_lim - lower_lim) * torch.abs(s).item()
+        # s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
 
+        s = 1 - torch.mean(ratio_no_mean)/torch.max(ratio_no_mean)
+
+        # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
+        # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - ess/nwalkers)
+
+        wait_epochs = upper_lim - (upper_lim - lower_lim) * torch.abs(s).item()
         
         wait_epochs = wait_epochs if wait_epochs > 0 else 0
 
@@ -504,7 +507,7 @@ for epoch in range(start, epochs+1):
 
     # for i in net.log_envelope.log_envs[0].parameters():
     #     weights_list.append(i.cpu().detach().numpy())
-    pickle.dump((x_memory, ratio_memory), f)
+    # pickle.dump((x_memory, ratio_memory), f)
     x_memory = []
     ratio_memory = []
     
