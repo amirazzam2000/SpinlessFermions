@@ -5,8 +5,8 @@ import os
 Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
-num_epochs = 10000
-tag = "Single_schedule_1"
+num_epochs = 50000
+tag = "Single_schedule_2"
 model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
