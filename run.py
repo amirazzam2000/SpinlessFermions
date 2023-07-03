@@ -294,6 +294,9 @@ t0 = sync_time()
 
 x, _ = sampler(n_sweeps)
 
+x_memory = []
+ratio_memory = []
+
 
 weights_filename = "results/energy/data/weights.pkl" if directory is None else directory.rstrip('\\') + "/weights.pkl"
 
@@ -336,7 +339,11 @@ for epoch in range(start, epochs+1):
 
 
     with torch.no_grad():
-        ratio_no_mean = torch.exp(2 * (logabs - old_logabs))   
+        ratio_no_mean = torch.exp(2 * (logabs - old_logabs))  
+
+        x_memory.append(x)
+        ratio_memory.append(ratio_no_mean)
+
         ess = (torch.pow(torch.sum(ratio_no_mean), 2) /
                torch.sum(torch.pow(ratio_no_mean, 2))).item()
         
@@ -497,7 +504,9 @@ for epoch in range(start, epochs+1):
 
     # for i in net.log_envelope.log_envs[0].parameters():
     #     weights_list.append(i.cpu().detach().numpy())
-    # pickle.dump(net.state_dict(), f)
+    pickle.dump((x_memory, ratio_memory), f)
+    x_memory = []
+    ratio_memory = []
     
 
 
@@ -515,8 +524,8 @@ for epoch in range(start, epochs+1):
         writer.write_to_file(filename)
         writer_t.write_to_file(time_filename)
 
-    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | s: %6.6f | weight ratio: %6.6f | samples changed: %r | waited epochs: %6i \r" %
-                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, s, weighted_ratio.item(), (x_old == x).all().item(), waited_epochs))
+    sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | s: %6.6f | weight ratio: %6.6f |  waited epochs: %6i \r" %
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, s, weighted_ratio.item(), waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
@@ -596,3 +605,5 @@ v_ene = v_ene/num_samples
 
 print("mean energy = ", m_ene.item() )
 print("variance in energy = ", v_ene.item() )
+
+f.close()

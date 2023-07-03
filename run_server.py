@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_Server_sched_1"
+tag = "Server_memory_1"
 Enable_ES = True
 num_epochs = 50000
 num_particles = 4
