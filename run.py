@@ -343,18 +343,18 @@ for epoch in range(start, epochs+1):
         # ratio_no_mean = 0 if ratio_no_mean < 0 else ratio_no_mean
         # ratio_no_mean = 2 if ratio_no_mean > 2 else ratio_no_mean
         
-        weighted_ratio = torch.mean(ratio_no_mean).item()
+        weighted_ratio = torch.mean(ratio_no_mean)
 
         s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
         # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - weighted_ratio)
         # wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(1 - ess/nwalkers)
 
-        wait_epochs = upper_lim - (upper_lim - lower_lim) * np.abs(s)
+        wait_epochs = upper_lim - (upper_lim - lower_lim) * torch.abs(s).item()
         
         wait_epochs = wait_epochs if wait_epochs > 0 else 0
 
         wait_data['waited_epochs'] = [waited_epochs]
-        wait_data['ratio'] = weighted_ratio
+        wait_data['ratio'] = weighted_ratio.item()
         wait_data['wait_threshold'] = wait_epochs
         wait_data['ESS'] = ess
         wait_data['s'] = s
@@ -516,7 +516,7 @@ for epoch in range(start, epochs+1):
         writer_t.write_to_file(time_filename)
 
     sys.stdout.write("Epoch: %6i | Energy: %6.4f +/- %6.4f | Loss: %6.4f | CI: %6.4f | Walltime: %4.2e (s) | epochs to wait: %6.6f | s: %6.6f | weight ratio: %6.6f | samples changed: %r | waited epochs: %6i \r" %
-                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, s , weighted_ratio, (x_old == x).all().item(), waited_epochs))
+                     (epoch, energy_mean, np.sqrt(energy_var.item() / nwalkers), the_current_loss, gs_CI, end-start, wait_epochs, s, weighted_ratio.item(), (x_old == x).all().item(), waited_epochs))
     sys.stdout.flush()
 
     if len(mean_energy_list) > window_size:
