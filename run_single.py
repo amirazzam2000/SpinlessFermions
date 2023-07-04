@@ -25,11 +25,32 @@ if not os.path.exists(out_dir):
 
 
 
-directory = directory_base + "/w_WMH_no_trans_no_freezing"
+directory = directory_base + "/w_WMH_no_trans_no_freezing_inner_mean_04"
 if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} > {}/no_trans_no_freezing_w_MH.txt".format(
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.04 -IM > {}/no_trans_no_freezing_w_MH.txt".format(
+    num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
+
+directory = directory_base + "/w_WMH_no_trans_no_freezing_outer_mean_04"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.04 > {}/no_trans_no_freezing_w_MH.txt".format(
+    num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
+
+directory = directory_base + "/w_WMH_no_trans_no_freezing_inner_mean_1"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.1 -IM > {}/no_trans_no_freezing_w_MH.txt".format(
+    num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
+
+directory = directory_base + "/w_WMH_no_trans_no_freezing_outer_mean_1"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.1 > {}/no_trans_no_freezing_w_MH.txt".format(
     num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
 
 ################################################################### Interaction Transfer testing sequence #################################################################################

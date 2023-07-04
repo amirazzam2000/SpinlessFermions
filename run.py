@@ -61,6 +61,10 @@ parser.add_argument("-LE", "--load_envelope_name",       type=str,   default=Non
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
 parser.add_argument("-T", "--tag",       type=str,   default="",     help="tag the name of the file")
 
+parser.add_argument("-STD", "--std_schedule",       type=float, default=0.1,   help="")
+add_bool_arg(parser, 'inner_mean', 'IM', help="take inner mean")
+
+
 args = parser.parse_args()
 
 nfermions = args.num_fermions #number of input nodes
@@ -77,6 +81,9 @@ nwalkers = args.num_walkers
 early_stopping_active = not args.no_early_stopping
 func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
+
+schedule_std = args.std_schedule
+schedule_take_inner_mean = args.inner_mean
 
 tag = args.tag
 
@@ -354,7 +361,10 @@ for epoch in range(start, epochs+1):
 
         # s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
 
-        s = 1 - torch.exp(- torch.pow((torch.mean(ratio_no_mean) - 1), 2) / 0.1)
+        if schedule_take_inner_mean:
+            s = 1 - torch.exp(- torch.pow((torch.mean(ratio_no_mean) - 1), 2) / schedule_std)
+        else:
+            s = 1 - torch.mean(torch.exp(- torch.pow((ratio_no_mean - 1), 2) / schedule_std))
 
         # s = 1 - torch.mean(ratio_no_mean)/torch.max(ratio_no_mean)
 
