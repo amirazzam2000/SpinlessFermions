@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "Server_schedule_4"
+tag = "Server_schedule_5"
 Enable_ES = True
 num_epochs = 50000
 num_particles = 4
@@ -64,11 +64,17 @@ if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
 
 model_name = "partial_data/model-A4-for-trans" + model_name_tag
-os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
     num_particles, model_name, directory, num_epochs, noes, tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} > {}/w_trans_no_freezing_w_MH.txt".format(
-    num_particles, model_name, directory, num_epochs, noes, tag, out_dir))
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -STD 0.1 -IM > {}/w_trans_no_freezing_w_MH_10_IM.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag + "_10_IM", out_dir))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -STD 0.04 -IM> {}/w_trans_no_freezing_w_MH_04_IM.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag + "_04_IM", out_dir))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -STD 0.04 > {}/w_trans_no_freezing_w_MH_04_OM.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag + "_04_OM", out_dir))
 
 # w WMH no trans no freezing
 
