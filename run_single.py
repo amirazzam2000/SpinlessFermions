@@ -6,7 +6,7 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 50000
-tag = "Single_schedule_7"
+tag = "Single_schedule_8"
 model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
@@ -36,8 +36,13 @@ directory = directory_base + "/w_WMH_no_trans_no_freezing_outer_mean_01"
 if not os.path.exists(directory):
     os.system("mkdir {}".format(directory))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.005 > {}/w_WMH_no_trans_no_freezing_outer_mean_04.txt".format(
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.01 -ST 1 > {}/w_WMH_no_trans_no_freezing_outer_mean_01.txt".format(
     num_particles, directory, num_epochs, noes, tag + 'WMH1', out_dir))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.01 -ST 2 > {}/w_WMH_no_trans_no_freezing_normal_01.txt".format(
+    num_particles, directory, num_epochs, noes, tag + 'WMH2', out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.005 -ST 1 > {}/w_WMH_no_trans_no_freezing_outer_mean_04.txt".format(
+#     num_particles, directory, num_epochs, noes, tag + 'WMH1', out_dir))
 
 # directory = directory_base + "/w_WMH_no_trans_no_freezing_inner_mean_1"
 # if not os.path.exists(directory):

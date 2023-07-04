@@ -62,6 +62,7 @@ parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="T
 parser.add_argument("-T", "--tag",       type=str,   default="",     help="tag the name of the file")
 
 parser.add_argument("-STD", "--std_schedule",       type=float, default=0.1,   help="")
+parser.add_argument("-ST", "--schedule_type",       type=int,   default=0,     help="")
 add_bool_arg(parser, 'inner_mean', 'IM', help="take inner mean")
 
 
@@ -83,6 +84,7 @@ func = nn.Tanh()  #activation function between layers
 pretrain = True   #pretraining output shape?
 
 schedule_std = args.std_schedule
+schedule_type = args.schedule_type
 schedule_take_inner_mean = args.inner_mean
 
 tag = args.tag
@@ -90,7 +92,7 @@ tag = args.tag
 directory = args.dir 
 
 nwalkers = args.num_walkers
-n_sweeps=10 #n_discard
+n_sweeps=20 #n_discard
 std=1.#0.02#1.
 target_acceptance=0.5
 
@@ -359,12 +361,13 @@ for epoch in range(start, epochs+1):
         
         weighted_ratio = torch.mean(ratio_no_mean)
 
-        # s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
 
-        if schedule_take_inner_mean:
+        if schedule_type == 0: # inner mean
             s = 1 - torch.exp(- torch.pow((torch.mean(ratio_no_mean) - 1), 2) / schedule_std)
-        else:
+        elif schedule_type == 1: # outer mean
             s = 1 - torch.mean(torch.exp(- torch.pow((ratio_no_mean - 1), 2) / schedule_std))
+        else:
+            s = (1/weighted_ratio) * torch.mean(torch.abs(1 - ratio_no_mean))
 
         # s = 1 - torch.mean(ratio_no_mean)/torch.max(ratio_no_mean)
 
@@ -576,7 +579,7 @@ for epoch in range(start, epochs+1):
 
         else:
             error_tolerance += 1
-            if error_tolerance >= 2:
+            if error_tolerance > 2:
                 trigger_times = 0
                 error_tolerance = 0
 
