@@ -6,7 +6,7 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 50000
-tag = "Single_schedule_2"
+tag = "Single_schedule_4"
 model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
@@ -22,7 +22,6 @@ if not os.path.exists("./out"):
 
 if not os.path.exists(out_dir):
     os.system("mkdir {}".format(out_dir))
-
 
 
 

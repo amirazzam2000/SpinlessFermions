@@ -352,7 +352,9 @@ for epoch in range(start, epochs+1):
         
         weighted_ratio = torch.mean(ratio_no_mean)
 
-        s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
+        # s = (1/weighted_ratio) * torch.mean(1 - ratio_no_mean)
+
+        s = 1 - torch.exp(- torch.pow((torch.mean(ratio_no_mean) - 1), 2) / 0.1)
 
         # s = 1 - torch.mean(ratio_no_mean)/torch.max(ratio_no_mean)
 
