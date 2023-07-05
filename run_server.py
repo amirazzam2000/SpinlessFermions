@@ -70,6 +70,18 @@ os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 
 os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -STD 0.005 > {}/w_trans_no_freezing_w_MH_10_IM.txt".format(
     num_particles, model_name, directory, num_epochs, noes, tag + "_01_OM", out_dir))
 
+
+directory = directory_base + "/w_WMH_w_trans_no_freezing_lr"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A4-for-trans" + model_name_tag
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag+ "lr___", out_dir))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -STD 0.005 -LR 0.000001 > {}/w_trans_no_freezing_w_MH_10_IM.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag + "lr___", out_dir))
+
 # os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -STD 0.04 -IM> {}/w_trans_no_freezing_w_MH_04_IM.txt".format(
 #     num_particles, model_name, directory, num_epochs, noes, tag + "_04_IM", out_dir))
 
