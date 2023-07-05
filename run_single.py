@@ -6,7 +6,7 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 50000
-tag = "Single_schedule_9"
+tag = "Single_schedule_lr"
 model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
@@ -32,8 +32,21 @@ model_name = "partial_data/model-A2-for-freezing-w-MH-C-" + model_name_tag
 os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
     num_pre_particles, model_name, directory, num_epochs, noes, tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 -F {} -T {} -STD 0.005 -LR 0.000001 > {}/no_trans_w_freezing_w_MH.txt".format(
+os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 -F {} -T {} -LR 0.000005 > {}/no_trans_w_freezing_w_MH.txt".format(
     num_particles, model_name, directory, num_epochs, noes, tag, out_dir))
+
+
+directory = directory_base + "/w_WMH_w_trans_no_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A4-for-trans" + model_name_tag
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag , out_dir))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -LR 0.000001 > {}/w_trans_no_freezing_w_MH_10_IM.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag , out_dir))
+
 
 
 
