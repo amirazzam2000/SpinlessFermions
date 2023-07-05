@@ -56,6 +56,7 @@ add_bool_arg(parser, 'freeze', 'F', help="freeze the first layers of the neural 
 add_bool_arg(parser, 'no_early_stopping', 'NoES', help="disable early stopping")
 parser.add_argument("-M", "--model_name",       type=str,   default=None,     help="The path of the output model")
 parser.add_argument("-W", "--num_walkers",       type=int,   default=4096,     help="Number of walkers for the metrapolis hasting")
+parser.add_argument("-SW", "--num_sweeps",       type=int,   default=20,     help="Number of sweeps for the metrapolis hasting")
 parser.add_argument("-LM", "--load_model_name",       type=str,   default=None,     help="The name of the input model")
 parser.add_argument("-LE", "--load_envelope_name",       type=str,   default=None,     help="The path to the input model to extract the envelope from")
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
