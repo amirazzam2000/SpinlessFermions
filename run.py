@@ -94,7 +94,7 @@ tag = args.tag
 directory = args.dir 
 
 nwalkers = args.num_walkers
-n_sweeps = arg.num_sweeps  # 20 #n_discard
+n_sweeps = args.num_sweeps  # 20 #n_discard
 std=1.#0.02#1.
 target_acceptance=0.5
 
