@@ -137,7 +137,7 @@ print("Network     | A: %4i | H: %4i | L: %4i | D: %4i " % (nfermions, num_hidde
 print("Sampler     | B: %4i | T: %4i | std: %4.2f | targ: %s" % (nwalkers, n_sweeps, std, str(target_acceptance)))
 print("Hamitlonian | V0: %4.2f | S0: %4.2f" % (V0, sigma0))
 print("Pre-epochs: | %6i" % (preepochs))
-print("Epochs:     | %6i | learning rate: %4.2f" % (epochs, lr))
+print("Epochs:     | %6i | learning rate: %4.7f" % (epochs, lr))
 print("schedule type : %i | schedule std : %4.2f" % (schedule_type, schedule_std))
 print("Number of parameters: %8i\n" % (count_parameters(net)))
 
