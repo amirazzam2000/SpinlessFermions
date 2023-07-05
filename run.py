@@ -65,6 +65,7 @@ parser.add_argument("-STD", "--std_schedule",       type=float, default=0.01,   
 parser.add_argument("-ST", "--schedule_type",       type=int,   default=1,     help="")
 add_bool_arg(parser, 'inner_mean', 'IM', help="take inner mean")
 
+parser.add_argument("-LR", "--learning_rate", type=float, default=1e-4,   help="learning rate ")
 
 args = parser.parse_args()
 
@@ -127,7 +128,7 @@ calc_elocal = HOw1D(net=net, V0=V0, sigma0=sigma0, nchunks=nchunks)
 
 HO = HermitePolynomialMatrix(num_particles=nfermions)
 
-lr = 1e-4
+lr = args.learning_rate  # 1e-4
 optim = torch.optim.Adam(params=net.parameters(), lr=lr) 
 
 gs_CI = get_groundstate(A=nfermions, V0=V0, datapath="groundstate/")
@@ -136,7 +137,7 @@ print("Network     | A: %4i | H: %4i | L: %4i | D: %4i " % (nfermions, num_hidde
 print("Sampler     | B: %4i | T: %4i | std: %4.2f | targ: %s" % (nwalkers, n_sweeps, std, str(target_acceptance)))
 print("Hamitlonian | V0: %4.2f | S0: %4.2f" % (V0, sigma0))
 print("Pre-epochs: | %6i" % (preepochs))
-print("Epochs:     | %6i" % (epochs))
+print("Epochs:     | %6i | learning rate: %4.2f" % (epochs, lr))
 print("schedule type : %i | schedule std : %4.2f" % (schedule_type, schedule_std))
 print("Number of parameters: %8i\n" % (count_parameters(net)))
 
