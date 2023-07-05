@@ -61,7 +61,7 @@ parser.add_argument("-LE", "--load_envelope_name",       type=str,   default=Non
 parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="The name of the output directory")
 parser.add_argument("-T", "--tag",       type=str,   default="",     help="tag the name of the file")
 
-parser.add_argument("-STD", "--std_schedule",       type=float, default=0.1,   help="")
+parser.add_argument("-STD", "--std_schedule",       type=float, default=0.01,   help="")
 parser.add_argument("-ST", "--schedule_type",       type=int,   default=1,     help="")
 add_bool_arg(parser, 'inner_mean', 'IM', help="take inner mean")
 
