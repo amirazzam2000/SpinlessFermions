@@ -8,7 +8,7 @@ num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag 
 out_dir = "./out/" + tag 
-model_name_tag = "-NoES-03-Jul"
+model_name_tag = tag#"-NoES-03-Jul"
 
 
 noes = "" if Enable_ES else "-NoES" 
