@@ -24,6 +24,18 @@ if not os.path.exists(out_dir):
     os.system("mkdir {}".format(out_dir))
 
 
+directory = directory_base + "/w_WMH_no_trans_w_freezing"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
+
+model_name = "partial_data/model-A2-for-freezing-w-MH-C-" + model_name_tag
+os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
+    num_pre_particles, model_name, directory, num_epochs, noes, tag, out_dir))
+
+os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 -F {} -T {} -STD 0.05 > {}/no_trans_w_freezing_w_MH.txt".format(
+    num_particles, model_name, directory, num_epochs, noes, tag, out_dir))
+
+
 
 # directory = directory_base + "/w_WMH_no_trans_no_freezing_inner_mean_04"
 # if not os.path.exists(directory):
@@ -61,28 +73,28 @@ if not os.path.exists(out_dir):
 ################################################################### Interaction Transfer testing sequence #################################################################################
 
 
-directory = directory_base + "/without_ES"
-if not os.path.exists(directory):
-    os.system("mkdir {}".format(directory))
+# directory = directory_base + "/without_ES"
+# if not os.path.exists(directory):
+#     os.system("mkdir {}".format(directory))
 
-model_name = "partial_data/model-A4-for-trans_NoES" + model_name_tag
-os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
-    num_particles, model_name, directory, "-NoES", tag, out_dir))
+# model_name = "partial_data/model-A4-for-trans_NoES" + model_name_tag
+# os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
+#     num_particles, model_name, directory, "-NoES", tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/without_ES.txt".format(
-    num_particles, model_name, directory, noes, tag, out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/without_ES.txt".format(
+#     num_particles, model_name, directory, noes, tag, out_dir))
 
 
-directory = directory_base + "/with_ES"
-if not os.path.exists(directory):
-    os.system("mkdir {}".format(directory))
+# directory = directory_base + "/with_ES"
+# if not os.path.exists(directory):
+#     os.system("mkdir {}".format(directory))
 
-model_name = "partial_data/model-A4-for-trans_ES2" + model_name_tag
-os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
-    num_particles, model_name, directory, noes, tag, out_dir))
+# model_name = "partial_data/model-A4-for-trans_ES2" + model_name_tag
+# os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
+#     num_particles, model_name, directory, noes, tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/with_ES.txt".format(
-    num_particles, model_name, directory, noes, tag, out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/with_ES.txt".format(
+#     num_particles, model_name, directory, noes, tag, out_dir))
 
 
 
