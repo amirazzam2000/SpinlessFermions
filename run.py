@@ -62,7 +62,7 @@ parser.add_argument("-DIR", "--dir",       type=str,   default=None,     help="T
 parser.add_argument("-T", "--tag",       type=str,   default="",     help="tag the name of the file")
 
 parser.add_argument("-STD", "--std_schedule",       type=float, default=0.1,   help="")
-parser.add_argument("-ST", "--schedule_type",       type=int,   default=0,     help="")
+parser.add_argument("-ST", "--schedule_type",       type=int,   default=1,     help="")
 add_bool_arg(parser, 'inner_mean', 'IM', help="take inner mean")
 
 
@@ -137,6 +137,7 @@ print("Sampler     | B: %4i | T: %4i | std: %4.2f | targ: %s" % (nwalkers, n_swe
 print("Hamitlonian | V0: %4.2f | S0: %4.2f" % (V0, sigma0))
 print("Pre-epochs: | %6i" % (preepochs))
 print("Epochs:     | %6i" % (epochs))
+print("schedule type : %i | schedule std : %4.2f" % (schedule_type, schedule_std))
 print("Number of parameters: %8i\n" % (count_parameters(net)))
 
 

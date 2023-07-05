@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_03_Jul"
+tag = "ES_05_Jul"
 Enable_ES = True
 num_epochs = 100000
 num_particles = 4

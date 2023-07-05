@@ -6,7 +6,7 @@ Enable_ES = True
 num_particles = 4
 num_pre_particles = 2
 num_epochs = 50000
-tag = "Single_schedule_8"
+tag = "Single_ES_NoES_05_Jul"
 model_name_tag = tag #"Single_ES_Trans_test-29-Jun"
 directory_base = "results/energy/data/" + tag
 out_dir = "./out/" + tag
@@ -32,15 +32,15 @@ if not os.path.exists(out_dir):
 # os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.04 -IM > {}/w_WMH_no_trans_no_freezing_inner_mean_04.txt".format(
 #     num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
 
-directory = directory_base + "/w_WMH_no_trans_no_freezing_outer_mean_01"
-if not os.path.exists(directory):
-    os.system("mkdir {}".format(directory))
+# directory = directory_base + "/w_WMH_no_trans_no_freezing_outer_mean_01"
+# if not os.path.exists(directory):
+#     os.system("mkdir {}".format(directory))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.01 -ST 1 > {}/w_WMH_no_trans_no_freezing_outer_mean_01.txt".format(
-    num_particles, directory, num_epochs, noes, tag + 'WMH1', out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.01 -ST 1 > {}/w_WMH_no_trans_no_freezing_outer_mean_01.txt".format(
+#     num_particles, directory, num_epochs, noes, tag + 'WMH1', out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.01 -ST 2 > {}/w_WMH_no_trans_no_freezing_normal_01.txt".format(
-    num_particles, directory, num_epochs, noes, tag + 'WMH2', out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.01 -ST 2 > {}/w_WMH_no_trans_no_freezing_normal_01.txt".format(
+#     num_particles, directory, num_epochs, noes, tag + 'WMH2', out_dir))
 # os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {}  -STD 0.005 -ST 1 > {}/w_WMH_no_trans_no_freezing_outer_mean_04.txt".format(
 #     num_particles, directory, num_epochs, noes, tag + 'WMH1', out_dir))
 
@@ -61,28 +61,28 @@ os.system("python3 run.py -N {} -V 10 -S 0.5  -DIR {} -UL 100 -LL 1 --epochs {} 
 ################################################################### Interaction Transfer testing sequence #################################################################################
 
 
-# directory = directory_base + "/without_ES"
-# if not os.path.exists(directory):
-#     os.system("mkdir {}".format(directory))
+directory = directory_base + "/without_ES"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
 
-# model_name = "partial_data/model-A4-for-trans_NoES" + model_name_tag
-# os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
-#     num_particles, model_name, directory, "-NoES", tag, out_dir))
+model_name = "partial_data/model-A4-for-trans_NoES" + model_name_tag
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
+    num_particles, model_name, directory, "-NoES", tag, out_dir))
 
-# os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/without_ES.txt".format(
-#     num_particles, model_name, directory, noes, tag, out_dir))
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/without_ES.txt".format(
+    num_particles, model_name, directory, noes, tag, out_dir))
 
 
-# directory = directory_base + "/with_ES"
-# if not os.path.exists(directory):
-#     os.system("mkdir {}".format(directory))
+directory = directory_base + "/with_ES"
+if not os.path.exists(directory):
+    os.system("mkdir {}".format(directory))
 
-# model_name = "partial_data/model-A4-for-trans_ES2" + model_name_tag
-# os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
-#     num_particles, model_name, directory, noes, tag, out_dir))
+model_name = "partial_data/model-A4-for-trans_ES2" + model_name_tag
+os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 1 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
+    num_particles, model_name, directory, noes, tag, out_dir))
 
-# os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/with_ES.txt".format(
-#     num_particles, model_name, directory, noes, tag, out_dir))
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 1 -LL 1 --epochs 100000  --preepochs 0 {} -T {} > {}/with_ES.txt".format(
+    num_particles, model_name, directory, noes, tag, out_dir))
 
 
 
