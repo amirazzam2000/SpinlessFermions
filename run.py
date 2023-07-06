@@ -619,7 +619,9 @@ for i in range(num_samples):
 
     with torch.no_grad():
         m = torch.mean(elocal)
-        v_ene += torch.mean((elocal - m)**2)
+        v = torch.mean((elocal - m)**2)
+        v = torch.sqrt(v/ elocal.shape[0])
+        v_ene += v
         m_ene += m
 
 m_ene = m_ene/num_samples
