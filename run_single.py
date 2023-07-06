@@ -34,18 +34,18 @@ if not os.path.exists(out_dir):
 #     num_particles, directory, num_epochs, noes, tag + 'WMH', out_dir))
 
 
-# w WMH no trans w freezing
+# # w WMH no trans w freezing
 
-directory = directory_base + "/w_WMH_no_trans_w_freezing"
-if not os.path.exists(directory):
-    os.system("mkdir {}".format(directory))
+# directory = directory_base + "/w_WMH_no_trans_w_freezing"
+# if not os.path.exists(directory):
+#     os.system("mkdir {}".format(directory))
 
-model_name = "partial_data/model-A2-for-freezing-w-MH-C-" + model_name_tag
-os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
-    num_pre_particles, model_name, directory, noes, tag, out_dir))
+# model_name = "partial_data/model-A2-for-freezing-w-MH-C-" + model_name_tag
+# os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs 100000  {} -T {} >> {}/dumb.txt".format(
+#     num_pre_particles, model_name, directory, noes, tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -UL 100 -LL 1 --epochs 100000  --preepochs 0 -F {} -T {} -SW 40 > {}/no_trans_w_freezing_w_MH.txt".format(
-    num_particles, model_name, directory, noes, tag, out_dir))
+# os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -DIR {} -UL 100 -LL 1 --epochs 100000  --preepochs 0 -F {} -T {} -SW 40 > {}/no_trans_w_freezing_w_MH.txt".format(
+#     num_particles, model_name, directory, noes, tag, out_dir))
 
 
 # w WMH w trans no freezing
