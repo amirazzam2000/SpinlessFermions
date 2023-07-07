@@ -340,6 +340,18 @@ for epoch in range(start, epochs+1):
     else: 
         time_stats['MH_time'] = 0
         sign, logabs = net(x)
+
+        with torch.no_grad():
+            ratio_no_mean = torch.exp(2 * (logabs - old_logabs))
+            m1 = torch.mean(torch.abs(1 - ratio_no_mean)).item()
+
+        if m1 > 0.15:
+            t_MH = sync_time()  # time.time()
+            x_old = x
+            x, _ = sampler(n_sweeps)
+            time_stats['MH_time'] = sync_time() - t_MH
+            sign, logabs = net(x)
+
     
 
     elocal, k, p, g = calc_elocal(x, return_all=True)
