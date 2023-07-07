@@ -328,10 +328,6 @@ for epoch in range(start, epochs+1):
         time_stats['MH_time'] = sync_time() - t_MH
 
         sign, logabs = net(x)
-     
-        # print()
-        # print("updating samples: steps taken =", waited_epochs, "threshold=", wait_epochs)
-        # print()
 
         old_logabs = logabs.clone()
         waited_epochs = 0
@@ -345,12 +341,15 @@ for epoch in range(start, epochs+1):
             ratio_no_mean = torch.exp(2 * (logabs - old_logabs))
             m1 = torch.mean(torch.abs(1 - ratio_no_mean)).item()
 
-        if m1 > 0.15:
+        if m1 > 0.1:
             t_MH = sync_time()  # time.time()
             x_old = x
             x, _ = sampler(n_sweeps)
             time_stats['MH_time'] = sync_time() - t_MH
             sign, logabs = net(x)
+
+            old_logabs = logabs.clone()
+            waited_epochs = 0
 
     
 

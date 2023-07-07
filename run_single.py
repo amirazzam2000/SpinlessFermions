@@ -58,7 +58,7 @@ model_name = "partial_data/model-A4-for-trans" + model_name_tag
 os.system("python3 run.py -N {} -V 5 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
     num_particles, model_name, directory, num_epochs, noes, tag, out_dir))
 
-os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -SW 40 > {}/w_trans_no_freezing_w_MH.txt".format(
+os.system("python3 run.py -N {} -V 10 -S 0.5   -LM {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -SW 20 -W 8000 > {}/w_trans_no_freezing_w_MH.txt".format(
     num_particles, model_name, directory, num_epochs, noes, tag, out_dir))
 
 # # w WMH w trans no freezing
