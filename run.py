@@ -342,6 +342,8 @@ for epoch in range(start, epochs+1):
             m1 = torch.mean(torch.abs(1 - ratio_no_mean)).item()
 
         if m1 > 0.1:
+            optim.zero_grad()
+            
             t_MH = sync_time()  # time.time()
             x_old = x
             x, _ = sampler(n_sweeps)
