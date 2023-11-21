@@ -41,6 +41,6 @@ for i in num_particles_list:
 
     model_name = f"partial_data/model-A{i}-no-freezing-w-MH-C-" + model_name_tag
     os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -M {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 {} -T {} -SW 40 -W 8000 > {}/no_trans_w_part_{}_no_freezing_w_MH.txt".format(
-        num_particles, load_model_name, model_name, directory, num_epochs, noes, tag, out_dir, i))
+        i, load_model_name, model_name, directory, num_epochs, noes, tag, out_dir, i))
     load_model_name = model_name
 
