@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "14_Nov_noTransfer_nofreezing"
+tag = "PT_21_Nov_noTransfer_nofreezing"
 Enable_ES = True
 num_epochs = 1000000
 num_particles = 4

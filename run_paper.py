@@ -2,7 +2,7 @@ import sys
 import os
 
 
-tag = "ES_10_Nov"
+tag = "PT_21_Nov"
 Enable_ES = True
 num_epochs = 1000000
 num_particles = 4
