@@ -1,7 +1,7 @@
 import os
 import sys
 
-tag = "PT_21_Nov_freezing"
+tag = "PT_29_Nov_freezing"
 Enable_ES = True
 num_epochs = 300000
 num_particles = 4
