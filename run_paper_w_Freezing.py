@@ -1,10 +1,9 @@
-import sys
 import os
-
+import sys
 
 tag = "PT_21_Nov_freezing"
 Enable_ES = True
-num_epochs = 1000000
+num_epochs = 300000
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag
@@ -31,16 +30,20 @@ if not os.path.exists(directory):
 
 
 model_name = "partial_data/model-A2-w-freezing-w-MH-C-" + model_name_tag
-os.system("python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
-    num_pre_particles, model_name, directory, num_epochs, noes, tag, out_dir))
+os.system(
+    "python3 run.py -N {} -V 10 -S 0.5  -M {} -DIR {} -UL 100 -LL 1 --epochs {}  {} -T {} >> {}/dumb.txt".format(
+        num_pre_particles, model_name, directory, num_epochs, noes, tag, out_dir
+    )
+)
 
 num_particles_list = [4, 6, 8, 10, 12]
 load_model_name = "partial_data/model-A2-no-freezing-w-MH-C-" + model_name_tag
 
 for i in num_particles_list:
-
     model_name = f"partial_data/model-A{i}-no-freezing-w-MH-C-" + model_name_tag
-    os.system("python3 run.py -N {} -V 10 -S 0.5 -LM {} -M {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 -F {} -T {} -SW 40 -W 8000 > {}/no_trans_w_part_{}_w_freezing_w_MH.txt".format(
-        i, load_model_name, model_name, directory, num_epochs, noes, tag, out_dir, i))
+    os.system(
+        "python3 run.py -N {} -V 10 -S 0.5 -LM {} -M {} -DIR {} -UL 100 -LL 1 --epochs {}  --preepochs 0 -F {} -T {} -SW 40 -W 8000 > {}/no_trans_w_part_{}_w_freezing_w_MH.txt".format(
+            i, load_model_name, model_name, directory, num_epochs, noes, tag, out_dir, i
+        )
+    )
     load_model_name = model_name
-
