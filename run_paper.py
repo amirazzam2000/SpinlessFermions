@@ -1,9 +1,9 @@
 import os
 import sys
 
-tag = "PT_29_Nov"
+tag = "PT_14_Dec"
 Enable_ES = True
-num_epochs = 300000
+num_epochs = 100000
 num_particles = 4
 num_pre_particles = 2
 directory_base = "results/energy/data/" + tag
